@@ -1,0 +1,36 @@
+
+
+<div id="subproblem_{{key}}_choice" style="display:none;">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <h2 class="col-sm-11">Choice #CHOICE</h2>
+                <div class="col-sm-1">
+                    <button class="btn btn-danger btn-sm float-right" type="button" onclick="parsons_delete_choice('PID', CHOICE)">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="form-group row">
+                <label for="choice-PID-CHOICE" class="col-sm-2 control-label">Content</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="content-PID-CHOICE" name="problem[PID][choices][CHOICE][context]" placeholder="[EMPTY]">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="choice-conditions-PID-CHOICE" class="col-sm-2 control-label">Conditions</label>
+                <div class="col-sm-10">
+                    <textarea id="choice-conditions-PID-CHOICE" class="form-control {{key}}_conditions" name="problem[PID][choices][CHOICE][conditions]"></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="choice-distractor-PID-CHOICE" class="col-sm-2 control-label">Distractor</label>
+                <div class="col-sm-10">
+                    <input type="checkbox" class="checkbox {{key}}_distractor" id="choice-distractor-PID-CHOICE" name="problem[PID][choices][CHOICE][distractor]">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
