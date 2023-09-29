@@ -1,10 +1,4 @@
 
-function studio_init_template_parsons(well, pid, problem){
-    jQuery.each(problem["choices"], function(index, elem) {
-        parsons_create_choice(pid, elem);
-    });
-}
-
 function parsons_create_choice(pid, choice_data){
     var well = $(studio_get_problem(pid));
 
@@ -29,7 +23,33 @@ function parsons_create_choice(pid, choice_data){
     }
 }
 
-function parsons_delete_choice(pid, choice)
-{
+function parsons_delete_choice(pid, choice) {
     $('#choice-' + choice + '-' + pid).detach();
+}
+
+function init_task_drag_and_drop() {
+    var choices = document.getElementById("task-choices");
+    var	solution = document.getElementById("task-solution");
+    console.log(choices);
+    console.log(solution);
+
+    new Sortable(choices, {
+        group: 'sharable',
+        animation: 150
+    });
+    new Sortable(solution, {
+        group: 'sharable',
+        animation: 150
+    });
+
+    var nestedSortables = [].slice.call(document.querySelectorAll('.nested-sortable'));
+    // Loop through each nested sortable element
+    for (var i = 0; i < nestedSortables.length; i++) {
+        new Sortable(nestedSortables[i], {
+            group: 'sharable',
+            animation: 150,
+            fallbackOnBody: true,
+            swapThreshold: 0.95
+        });
+    }
 }
