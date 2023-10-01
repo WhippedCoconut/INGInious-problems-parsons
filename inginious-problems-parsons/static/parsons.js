@@ -19,8 +19,12 @@ function parsons_create_choice(pid, choice_data){
     var well = $(studio_get_problem(pid));
 
     var index = 0;
-    while($('#choice-' + index + '-' + pid).length != 0)
+    if ("index" in choice_data)
+        index = choice_data["index"];
+    else {
+        while($('#choice-' + index + '-' + pid).length != 0)
         index++;
+    }
 
     var row = $("#subproblem_parsons_choice").html();
     var new_row_content = row.replace(/PID/g, pid).replace(/CHOICE/g, index);
@@ -31,7 +35,9 @@ function parsons_create_choice(pid, choice_data){
         $(".parsons_content_" + choice_data["index"]).val(choice_data["content"]);
     }
 
-    var editor = registerCodeEditor($(".parsons_conditions_" + choice_data["index"], new_row)[0], 'rst', 1);
+
+
+    var editor = registerCodeEditor($(".parsons_conditions_" + index, new_row)[0], 'rst', 1);
     if("conditions" in choice_data)
         editor.setValue(choice_data["conditions"]);
 
