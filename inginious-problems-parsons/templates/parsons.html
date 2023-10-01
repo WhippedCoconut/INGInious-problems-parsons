@@ -1,16 +1,12 @@
-
 {{ header | safe }}
 
 <div id="shared-lists" class="row d-flex justify-content-center">
     <h4 class="col-5 text-center">Choices</h4>
     <h4 class="col-5 text-center">Solution</h4>
     <div id="task-choices" class="list-group col-5 card-header mt-1 border border-primary border-3">
-        <div class="list-group-item nested-sortable mt-1 mb-1 ml-3 border border-primary">Item 1</div>
-        <div class="list-group-item nested-sortable mt-1 mb-1 ml-3 border border-primary">Item 2</div>
-        <div class="list-group-item mt-1 mb-1 ml-3 border border-primary">Item 3</div>
-        <div class="list-group-item mt-1 mb-1 ml-3 border border-primary">Item 4</div>
-        <div class="list-group-item mt-1 mb-1 ml-3 border border-primary">Item 5</div>
-        <div class="list-group-item mt-1 mb-1 ml-3 border border-primary">Item 6</div>
+        {% for choice in choices %}
+            <div class="list-group-item {% if choice["nested"] %}nested-sortable{% endif %} mt-1 mb-1 ml-3 border border-primary">{{choice["content"]}}</div>
+        {% endfor %}
     </div>
 
     <div id="task-solution" class="list-group col-5 card-header mt-1 ml-2 border border-primary border-3">
@@ -19,7 +15,6 @@
 
 <script>
     $(function() {
-        homepath = '{{get_homepath()}}';
         init_task_drag_and_drop();
     });
 </script>
