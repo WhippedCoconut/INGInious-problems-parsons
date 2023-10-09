@@ -28,21 +28,24 @@ function parsons_create_choice(pid, choice_data){
     $("#choices-" + pid, well).append(new_row);
 
     if("content" in choice_data){
-        $(".parsons_content_" + choice_data["index"]).val(choice_data["content"]);
+        $("#choice-content-" + pid + '-' + choice_data["index"]).val(choice_data["content"]);
     }
 
-    var editor = registerCodeEditor($(".parsons_conditions_" + choice_data["index"], new_row)[0], 'rst', 1);
+    var editor = registerCodeEditor($("#choice-conditions-" + pid + '-' + choice_data["index"], new_row)[0], 'rst', 1);
     if("conditions" in choice_data)
         editor.setValue(choice_data["conditions"]);
 
     if("distractor" in choice_data && choice_data["distractor"] === true) {
-        var checkbox = $(".parsons_distractor_" + choice_data["index"]);
-        checkbox.click();
+        var button = $("#choice-distractor-" + pid + '-' + choice_data["index"]);
+        button.click();
     }
 
-    if("nested" in choice_data && choice_data["nested"] === true) {
-        var checkbox = $(".parsons_nested_" + choice_data["index"]);
-        checkbox.click();
+    if("line" in choice_data){
+        $("#choice-line-" + pid + '-' + choice_data["index"]).val(choice_data["line"])
+    }
+
+    if("indent" in choice_data){
+        $("#choice-indent-" + pid + '-' + choice_data["index"]).val(choice_data["indent"])
     }
 }
 
@@ -50,27 +53,20 @@ function parsons_delete_choice(pid, choice) {
     $('#choice-' + choice + '-' + pid).detach();
 }
 
-function init_task_drag_and_drop() {
-    var choices = document.getElementById("task-choices");
-    var	solution = document.getElementById("task-solution");
+function parsons_toggle_choice(input_name) {
+    var checkbox = $("input[name='" + input_name + "']");
+    checkbox.click();
+    var btn = checkbox.next("button");
+    btn.toggleClass("btn-primary");
+    btn.toggleClass("btn-success");
+    var icon = btn.find("i");
+    icon.toggleClass("fa-times");
+    icon.toggleClass("fa-check");
+}
 
+function init_edit_drag_and_drop(pid) {
+    var choices = document.getElementById("choices-" + pid);
     new Sortable(choices, {
-        group: 'sharable',
         animation: 150
     });
-    new Sortable(solution, {
-        group: 'sharable',
-        animation: 150
-    });
-
-    var nestedSortables = [].slice.call(document.querySelectorAll('.nested-sortable'));
-    // Loop through each nested sortable element
-    for (var i = 0; i < nestedSortables.length; i++) {
-        new Sortable(nestedSortables[i], {
-            group: 'sharable',
-            animation: 150,
-            fallbackOnBody: true,
-            swapThreshold: 0.95
-        });
-    }
 }

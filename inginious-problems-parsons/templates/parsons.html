@@ -1,20 +1,24 @@
 {{ header | safe }}
 
-<div id="shared-lists" class="row d-flex justify-content-center">
-    <h4 class="col-5 text-center">Choices</h4>
-    <h4 class="col-5 text-center">Solution</h4>
-    <div id="task-choices" class="list-group col-5 card-header mt-1 border border-primary border-3">
-        {% for choice in choices %}
-            <div class="list-group-item {% if choice["nested"] %}nested-sortable{% endif %} mt-1 mb-1 ml-3 border border-primary">{{choice["content"]}}</div>
-        {% endfor %}
-    </div>
 
-    <div id="task-solution" class="list-group col-5 card-header mt-1 ml-2 border border-primary border-3">
+<div id="parsons-problem">
+    <div class="row justify-content-center">
+        <div class="parsons-list col-10 border border-success border-3" style="min-height: 50px">
+            {% for choice in choices %}
+                <div id="choice-{{choice["index"]}}" class="parsons-item p-2 mt-1 mb-1 border border-primary overflow-hidden" draggable="true">{{choice["content"]}}</div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row mt-4 justify-content-center" style="min-height: 50px">
+        <div class="parsons-list parsons-result col-10 border border-danger border-3"></div>
     </div>
 </div>
 
+<input type="text" name="{{inputId}}" value="" class="parsons-result-input mt-4 col-12"/>
+
 <script>
     $(function() {
-        init_task_drag_and_drop();
+        var parsons = document.getElementById("parsons-problem");
+        parsons_init(parsons, 'choice-');
     });
 </script>

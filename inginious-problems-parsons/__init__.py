@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import json
 import os
 import sys
 
@@ -41,8 +41,10 @@ class ParsonsProblem(Problem):
             data['conditions'] = choice['conditions']
             if 'distractor' in choice:
                 data['distractor'] = True
-            if 'nested' in choice:
-                data['nested'] = True
+            if 'line' in choice:
+                data['line'] = int(choice['line'])
+            if 'indent' in choice:
+                data['indent'] = int(choice['indent'])
             self._choices.append(data)
 
     @classmethod
@@ -56,26 +58,33 @@ class ParsonsProblem(Problem):
         return str
 
     def check_answer(self, task_input, language):
+        answer = json.loads(task_input[self.get_id()])
+        for i in range(len(self._choices)):
+            if self._choices[i]['line'] != answer['lines'][i]:
+                return False, None, ["Wrong lines order"], 0, ""
+            if self._choices[i]['indent'] != answer['indent'][i]:
+                return False, None, ["Wrong indent"], 0, ""
         return True, None, ["correct answer"], 0, ""
 
     @classmethod
     def parse_problem(self, problem_content):
-        problem_content = Problem.parse_problem(problem_content)
-        if "shuffle" in problem_content:
-            problem_content["distractor"] = True
+        parsed_content = Problem.parse_problem(problem_content)
+        print(parsed_content, sys.stdout)
+        if "shuffle" in parsed_content:
+            parsed_content["distractor"] = True
 
-        if "choices" in problem_content:
+        if "choices" in parsed_content:
             problem_content["choices"] = [val for _, val in
-                                          sorted(iter(problem_content["choices"].items()), key=lambda x: int(x[0]))]
-            for choice in problem_content["choices"]:
+                                         sorted(iter(parsed_content["choices"].items()), key=lambda x: int(x[0]))]
+            for choice in parsed_content["choices"]:
                 if "distractor" in choice:
                     choice["distractor"] = True
-                if "nested" in choice:
-                    choice["nested"] = True
-        return problem_content
+        print(parsed_content, sys.stdout)
+        return parsed_content
 
     @classmethod
     def get_text_fields(cls):
+        print("GET TEXT FIELD", sys.stdout)
         return Problem.get_text_fields()
 
 class DisplayableParsonsProblem(ParsonsProblem, DisplayableProblem):
@@ -104,6 +113,6 @@ class DisplayableParsonsProblem(ParsonsProblem, DisplayableProblem):
 
 def init(plugin_manager, course_factory, client, plugin_config):
     plugin_manager.add_page('/plugins/parsons/static/<path:path>', StaticMockPage.as_view("parsonsproblemstaticpage"))
-    plugin_manager.add_hook("javascript_footer", lambda: "/plugins/parsons/static/lib/Sortable.min.js")
-    plugin_manager.add_hook("javascript_footer", lambda: "/plugins/parsons/static/parsons.js")
+    plugin_manager.add_hook("javascript_header", lambda: "/plugins/parsons/static/parsons.js")
+    plugin_manager.add_hook("javascript_footer", lambda: "/plugins/parsons/static/parsons_drag_and_drop.js")
     course_factory.get_task_factory().add_problem_type(DisplayableParsonsProblem)

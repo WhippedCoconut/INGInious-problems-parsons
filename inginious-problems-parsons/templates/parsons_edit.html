@@ -4,9 +4,15 @@
         <textarea id="header-PID" class="form-control" name="problem[PID][header]"></textarea>
     </div>
 </div>
-<div class="col-sm-12">
+<div class="form-group row">
+    <label for="shuffle-PID" class="col-sm-2 control-label">Shuffle choices</label>
+    <div class="col-sm-10">
+        <input type="checkbox" name="shuffle-PID">
+    </div>
+</div>
+<div class="col-sm-12" id="parsons-problem">
     <h4 style="text-align: center">Choices</h4>
-    <div id="choices-PID" class="mb-3">
+    <div id="choices-PID" class="list-group card-header mt-1 mb-3 border border-primary border-3 parsons-list parsons-result">
 
     </div>
     <button class="btn btn-info btn-sm btn-block" type="button" onclick="parsons_create_choice('PID', {})">
@@ -14,3 +20,10 @@
     Add new choice
     </button>
 </div>
+
+<script>
+    $(function() {
+        var parsons = document.getElementById("parsons-problem");
+        parsons_init(parsons, 'choice-item-PID-');
+    });
+</script>
