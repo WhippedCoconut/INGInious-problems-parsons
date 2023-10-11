@@ -34,9 +34,9 @@ function ParsonsDragAndDrop(itemID) {
                let rect = item.getBoundingClientRect();
                return elem.clientY <= rect.top + item.offsetHeight / 2;
            });
-           if (nextItem)
+           if (draggingItem !== null && nextItem)
                list.insertBefore(draggingItem, nextItem);
-           else
+           else if (draggingItem !== null)
                list.appendChild(draggingItem);
            this.updateIndent(elem.clientX - this.dragStartX, itemID);
        });
@@ -51,7 +51,6 @@ ParsonsDragAndDrop.prototype.updateIndent = function (offset) {
 
 ParsonsDragAndDrop.prototype.updateValues = function () {
     const itemsInResult = [...this.resultList.querySelectorAll("[id^=choice-" + this.itemID + "]")];
-    console.log(itemsInResult);
     this.itemsValues = new Array(this.itemsValues.length).fill(-1);
     for (let i = 0; i < itemsInResult.length; i++) {
         let index = this.getIndex(itemsInResult[i]);
