@@ -50,7 +50,8 @@ ParsonsDragAndDrop.prototype.updateIndent = function (offset) {
 }
 
 ParsonsDragAndDrop.prototype.updateValues = function () {
-    const itemsInResult = this.resultList.querySelectorAll(".parsons-item");
+    const itemsInResult = [...this.resultList.querySelectorAll("[id^=choice-" + this.itemID + "]")];
+    console.log(itemsInResult);
     this.itemsValues = new Array(this.itemsValues.length).fill(-1);
     for (let i = 0; i < itemsInResult.length; i++) {
         let index = this.getIndex(itemsInResult[i]);

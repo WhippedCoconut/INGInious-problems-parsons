@@ -3,7 +3,7 @@
 <div class="row justify-content-center">
     <div class="parsons-list-{{inputId}} col-10 border border-success border-3" style="min-height: 50px">
         {% for choice in choices %}
-            <div id="choice-{{inputId}}-{{choice["index"]}}" class="parsons-item p-2 mt-1 mb-1 border border-primary overflow-hidden" draggable="true">{{choice["content"]}}</div>
+            <div id="choice-{{inputId}}-{{choice["index"]}}" class="p-2 mt-1 mb-1 border border-primary overflow-hidden" draggable="true">{{choice["content"]}}</div>
         {% endfor %}
     </div>
 </div>
