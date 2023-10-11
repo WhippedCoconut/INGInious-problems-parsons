@@ -1,43 +1,35 @@
-let items;
-let lists;
-let resultList;
 
-let dragStartX;
-let dragStartY;
-let dragStartIndent;
-let draggingItemIndex;
+function ParsonsDragAndDrop(itemID) {
+    this.itemID = itemID;
 
-let itemsValues;
-let itemsIndent;
+    this.lists = document.querySelectorAll(".parsons-list-" + itemID);
+    this.resultList  = document.querySelector(".parsons-result-" + itemID);
 
-function parsons_init(element, itemID) {
-    items = element.querySelectorAll(".parsons-item");
-    lists = element.querySelectorAll(".parsons-list");
-    resultList  = document.querySelector(".parsons-result");
-    itemsValues = new Array(items.length);
-    itemsIndent = new Array(items.length).fill(0);
+    this.items = $("[id^=choice-" + itemID + "]").toArray();
+    this.itemsValues = new Array(this.items.length);
+    this.itemsIndent = new Array(this.items.length).fill(0);
 
-    items.forEach((item) => {
+
+    this.items.forEach((item) => {
         item.addEventListener("dragstart", (elem) => {
-           item.classList.add("dragging");
-           dragStartX = elem.clientX;
-           dragStartY = elem.clientY;
-           draggingItemIndex = parseInt(item.id.split('-')[1]);
-           dragStartIndent = itemsIndent[draggingItemIndex];
+           item.classList.add(itemID + "dragging");
+           this.dragStartX = elem.clientX;
+           this.draggingItemIndex = this.getIndex(item);
+           this.dragStartIndent = this.itemsIndent[this.draggingItemIndex];
         });
 
-        item.addEventListener("dragend", (elem) => {
-           item.classList.remove("dragging");
-           updateValues();
-           updateResult();
+        item.addEventListener("dragend", () => {
+           item.classList.remove(itemID + "dragging");
+           this.updateValues();
+           this.updateResult();
         });
     });
 
-    lists.forEach((list) => {
+    this.lists.forEach((list) => {
        list.addEventListener("dragover", (elem) => {
            elem.preventDefault();
-           let draggingItem = document.querySelector(".dragging");
-           let otherItems = [...list.querySelectorAll(".parsons-item:not(.dragging)")];
+           let draggingItem = document.querySelector('.' + itemID + "dragging");
+           let otherItems = [...list.querySelectorAll("[id^=choice-" + itemID + "]:not(." + itemID + "dragging)")];
            let nextItem = otherItems.find(item => {
                let rect = item.getBoundingClientRect();
                return elem.clientY <= rect.top + item.offsetHeight / 2;
@@ -46,38 +38,35 @@ function parsons_init(element, itemID) {
                list.insertBefore(draggingItem, nextItem);
            else
                list.appendChild(draggingItem);
-
-           updateIndent(elem.clientX - dragStartX, itemID);
+           this.updateIndent(elem.clientX - this.dragStartX, itemID);
        });
     });
 }
 
-
-function updateIndent(offset, itemID) {
-    itemsIndent[draggingItemIndex] = Math.max(0, dragStartIndent + Math.round(offset / 50));
-    $('#' + itemID + draggingItemIndex).css("margin-left", itemsIndent[draggingItemIndex] * 60 + "px");
-    $("#parsons-result-indent").val(itemsIndent);
+ParsonsDragAndDrop.prototype.updateIndent = function (offset) {
+    this.itemsIndent[this.draggingItemIndex] = Math.max(0, this.dragStartIndent + Math.round(offset / 50));
+    $('#choice-' + this.itemID + '-' + this.draggingItemIndex).css("margin-left", this.itemsIndent[this.draggingItemIndex] * 60 + "px");
+    $("#parsons-result-indent").val(this.itemsIndent);
 }
 
-function updateValues() {
-    const itemsInResult = resultList.querySelectorAll(".parsons-item");
-    itemsValues = new Array(itemsValues.length).fill(-1);
+ParsonsDragAndDrop.prototype.updateValues = function () {
+    const itemsInResult = this.resultList.querySelectorAll(".parsons-item");
+    this.itemsValues = new Array(this.itemsValues.length).fill(-1);
     for (let i = 0; i < itemsInResult.length; i++) {
-        let index = getIndex(itemsInResult[i]);
-        itemsValues[index] = i;
+        let index = this.getIndex(itemsInResult[i]);
+        this.itemsValues[index] = i;
     }
 }
 
-function updateResult(){
+ParsonsDragAndDrop.prototype.updateResult = function () {
     let result = {
-        lines: itemsValues,
-        indent: itemsIndent
+        lines: this.itemsValues,
+        indent: this.itemsIndent
     };
-    $(".parsons-result-input").val(JSON.stringify(result));
-    console.log(result);
+    $(".parsons-result-input-" + this.itemID).val(JSON.stringify(result));
 }
 
-function getIndex(item){
-    var splitted = item.id.split('-');
-    return parseInt(splitted[splitted.length -1]);
+ParsonsDragAndDrop.prototype.getIndex = function (item) {
+    let split = item.id.split('-');
+    return parseInt(split[split.length -1]);
 }

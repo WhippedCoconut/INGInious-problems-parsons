@@ -22,13 +22,13 @@ function parsons_create_choice(pid, choice_data){
     if ("index" in choice_data)
         index = choice_data["index"];
     else {
-        while($('#choice-' + index + '-' + pid).length != 0)
+        while($('#choice-' + pid + '-' + index).length != 0)
         index++;
     }
 
     var row = $("#subproblem_parsons_choice").html();
     var new_row_content = row.replace(/PID/g, pid).replace(/CHOICE/g, index);
-    var new_row = $("<div></div>").attr('id', 'choice-' + index + '-' + pid).html(new_row_content);
+    var new_row = $("<div></div>").attr('id', 'choice-' + pid + '-' + index).html(new_row_content);
     $("#choices-" + pid, well).append(new_row);
 
     if("content" in choice_data){
@@ -54,7 +54,7 @@ function parsons_create_choice(pid, choice_data){
 }
 
 function parsons_delete_choice(pid, choice) {
-    $('#choice-' + choice + '-' + pid).detach();
+    $('#choice-' + pid + '-' + choice).detach();
 }
 
 function parsons_toggle_choice(input_name) {
@@ -66,11 +66,4 @@ function parsons_toggle_choice(input_name) {
     var icon = btn.find("i");
     icon.toggleClass("fa-times");
     icon.toggleClass("fa-check");
-}
-
-function init_edit_drag_and_drop(pid) {
-    var choices = document.getElementById("choices-" + pid);
-    new Sortable(choices, {
-        animation: 150
-    });
 }

@@ -1,24 +1,20 @@
 {{ header | safe }}
 
-
-<div id="parsons-problem">
-    <div class="row justify-content-center">
-        <div class="parsons-list col-10 border border-success border-3" style="min-height: 50px">
-            {% for choice in choices %}
-                <div id="choice-{{choice["index"]}}" class="parsons-item p-2 mt-1 mb-1 border border-primary overflow-hidden" draggable="true">{{choice["content"]}}</div>
-            {% endfor %}
-        </div>
-    </div>
-    <div class="row mt-4 justify-content-center" style="min-height: 50px">
-        <div class="parsons-list parsons-result col-10 border border-danger border-3"></div>
+<div class="row justify-content-center">
+    <div class="parsons-list-{{inputId}} col-10 border border-success border-3" style="min-height: 50px">
+        {% for choice in choices %}
+            <div id="choice-{{inputId}}-{{choice["index"]}}" class="parsons-item p-2 mt-1 mb-1 border border-primary overflow-hidden" draggable="true">{{choice["content"]}}</div>
+        {% endfor %}
     </div>
 </div>
+<div class="row mt-4 justify-content-center" style="min-height: 50px">
+    <div class="parsons-list-{{inputId}} parsons-result-{{inputId}} col-10 border border-danger border-3"></div>
+</div>
 
-<input type="text" name="{{inputId}}" value="" class="parsons-result-input mt-4 col-12"/>
+<input type="text" name="{{inputId}}" value="" class="parsons-result-input-{{inputId}} mt-4 col-12"/>
 
 <script>
-    $(function() {
-        var parsons = document.getElementById("parsons-problem");
-        parsons_init(parsons, 'choice-');
+    $(document).ready(function() {
+        var ParsonsDD = new ParsonsDragAndDrop('{{inputId}}')
     });
 </script>
