@@ -41,13 +41,40 @@ function ParsonsDragAndDrop(itemID) {
            this.updateIndent(elem.clientX - this.dragStartX, itemID);
        });
     });
+};
+
+ParsonsDragAndDrop.prototype.addDraggable = function (index) {
+    let item = document.querySelector("#choice-" + this.itemID + '-' + index);
+
+    this.items.splice(index, 0, item); // insert item at index
+    this.itemsValues.splice(index, 0, -1); // insert value -1 at the item index
+    this.itemsIndent.splice(index, 0, 0);  // insert indent 0 at the item index
+
+    item.addEventListener("dragstart", (elem) => {
+           item.classList.add(this.itemID + "dragging");
+           this.dragStartX = elem.clientX;
+           this.draggingItemIndex = this.getIndex(item);
+           this.dragStartIndent = this.itemsIndent[this.draggingItemIndex];
+        });
+
+    item.addEventListener("dragend", () => {
+       item.classList.remove(this.itemID + "dragging");
+       this.updateValues();
+       this.updateResult();
+    });
+};
+
+ParsonsDragAndDrop.prototype.removeDraggable = function (index) {
+    this.items.splice(index, 1); //remove item at index
+    this.itemsValues.splice(index, 1);
+    this.itemsIndent.splice(index, 1);
 }
 
 ParsonsDragAndDrop.prototype.updateIndent = function (offset) {
     this.itemsIndent[this.draggingItemIndex] = Math.max(0, this.dragStartIndent + Math.round(offset / 50));
-    $('#choice-' + this.itemID + '-' + this.draggingItemIndex).css("margin-left", this.itemsIndent[this.draggingItemIndex] * 60 + "px");
-    $("#parsons-result-indent").val(this.itemsIndent);
-}
+    let item = $("#" + this.items[this.draggingItemIndex].id);
+    item.css("margin-left", this.itemsIndent[this.draggingItemIndex] * 60 + "px");
+};
 
 ParsonsDragAndDrop.prototype.updateValues = function () {
     const itemsInResult = [...this.resultList.querySelectorAll("[id^=choice-" + this.itemID + "]")];
@@ -56,7 +83,7 @@ ParsonsDragAndDrop.prototype.updateValues = function () {
         let index = this.getIndex(itemsInResult[i]);
         this.itemsValues[index] = i;
     }
-}
+};
 
 ParsonsDragAndDrop.prototype.updateResult = function () {
     let result = {
@@ -64,9 +91,11 @@ ParsonsDragAndDrop.prototype.updateResult = function () {
         indent: this.itemsIndent
     };
     $(".parsons-result-input-" + this.itemID).val(JSON.stringify(result));
-}
+
+    console.log("value:  " + this.itemsValues);
+    console.log("indent: " + this.itemsIndent);
+};
 
 ParsonsDragAndDrop.prototype.getIndex = function (item) {
-    let split = item.id.split('-');
-    return parseInt(split[split.length -1]);
-}
+    return this.items.indexOf(item);
+};

@@ -1,3 +1,5 @@
+
+let dragAndDropDict = {};
 function studio_init_template_parsons(well, pid, problem) {
     jQuery.each(problem["choices"], function(index, elem) {
         elem.index = index;
@@ -28,7 +30,10 @@ function parsons_create_choice(pid, choice_data){
 
     var row = $("#subproblem_parsons_choice").html();
     var new_row_content = row.replace(/PID/g, pid).replace(/CHOICE/g, index);
-    var new_row = $("<div></div>").attr('id', 'choice-' + pid + '-' + index).html(new_row_content);
+    var new_row = $("<div></div>")
+        .attr('id', 'choice-' + pid + '-' + index)
+        .attr('draggable', 'True')
+        .html(new_row_content);
     $("#choices-" + pid, well).append(new_row);
 
     if("content" in choice_data){
@@ -51,9 +56,13 @@ function parsons_create_choice(pid, choice_data){
     if("indent" in choice_data){
         $("#choice-indent-" + pid + '-' + choice_data["index"]).val(choice_data["indent"])
     }
+
+    if (Object.keys(choice_data).length === 0)
+        dragAndDropDict[pid + "_DnD"].addDraggable(index);
 }
 
 function parsons_delete_choice(pid, choice) {
+    dragAndDropDict[pid + "_DnD"].removeDraggable(choice)
     $('#choice-' + pid + '-' + choice).detach();
 }
 

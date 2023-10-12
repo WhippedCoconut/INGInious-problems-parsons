@@ -1,7 +1,7 @@
 {{ header | safe }}
 
 <div class="row justify-content-center">
-    <div class="parsons-list-{{inputId}} col-10 border border-success border-3" style="min-height: 50px">
+    <div class="parsons-list-{{inputId}} col-12 border border-success border-3" style="min-height: 50px">
         {% for choice in choices %}
             <div id="choice-{{inputId}}-{{choice["index"]}}" class="p-2 mt-1 mb-1 border border-primary overflow-hidden" draggable="true">{{choice["content"]}}</div>
         {% endfor %}
@@ -15,6 +15,6 @@
 
 <script>
     $(document).ready(function() {
-        var ParsonsDD = new ParsonsDragAndDrop('{{inputId}}')
+        new ParsonsDragAndDrop('{{inputId}}')
     });
 </script>
