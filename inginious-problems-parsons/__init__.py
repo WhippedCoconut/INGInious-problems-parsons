@@ -27,7 +27,6 @@ class ParsonsProblem(Problem):
     def __init__(self, problemid, content, translations, taskfs):
         Problem.__init__(self, problemid, content, translations, taskfs)
         self._header = content['header'] if "header" in content else ""
-        self._shuffle = True if 'shuffle' in content else False
         self._choices = []
         if "choices" not in content or not isinstance(content['choices'], (list, tuple)):
             raise Exception(problemid + " does not have choices or choices are not an array")
@@ -39,8 +38,6 @@ class ParsonsProblem(Problem):
             if 'conditions' not in choice:
                 raise Exception("A choice in " + problemid + " does not have conditions")
             data['conditions'] = choice['conditions']
-            if 'distractor' in choice:
-                data['distractor'] = True
             if 'line' in choice:
                 data['line'] = int(choice['line'])
             if 'indent' in choice:

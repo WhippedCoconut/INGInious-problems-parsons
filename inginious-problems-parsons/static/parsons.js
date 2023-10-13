@@ -44,11 +44,6 @@ function parsons_create_choice(pid, choice_data){
     if("conditions" in choice_data)
         editor.setValue(choice_data["conditions"]);
 
-    if("distractor" in choice_data && choice_data["distractor"] === true) {
-        var button = $("#choice-distractor-" + pid + '-' + choice_data["index"]);
-        button.click();
-    }
-
     if("line" in choice_data){
         $("#choice-line-" + pid + '-' + choice_data["index"]).val(choice_data["line"])
     }
