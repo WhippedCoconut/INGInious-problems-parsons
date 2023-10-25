@@ -1,6 +1,9 @@
 
 let dragAndDropDict = {};
 function studio_init_template_parsons(well, pid, problem) {
+    if ("indentation" in problem)
+        $("#indentation-" + pid).click();
+
     jQuery.each(problem["choices"], function(index, elem) {
         elem.index = index;
         parsons_create_choice(pid, elem);
@@ -16,7 +19,6 @@ function load_feedback_parsons(key, content) {
     load_feedback_code(key, content);
 }
 
-
 function parsons_create_choice(pid, choice_data){
     var well = $(studio_get_problem(pid));
 
@@ -24,7 +26,7 @@ function parsons_create_choice(pid, choice_data){
     if ("index" in choice_data)
         index = choice_data["index"];
     else {
-        while($('#choice-' + pid + '-' + index).length != 0)
+        while($('#choice-' + pid + '-' + index).length !== 0)
         index++;
     }
 
@@ -59,6 +61,16 @@ function parsons_create_choice(pid, choice_data){
 function parsons_delete_choice(pid, choice) {
     dragAndDropDict[pid + "_DnD"].removeDraggable(choice)
     $('#choice-' + pid + '-' + choice).detach();
+}
+
+function toggle_indentation(pid) {
+    // variable may not be ready
+    if(typeof dragAndDropDict[pid + "_DnD"] !== "undefined"){
+        dragAndDropDict[pid + "_DnD"].toggleIndentation();
+    }
+    else{ // retry in a moment
+        setTimeout(() => toggle_indentation(pid), 250);
+    }
 }
 
 function parsons_toggle_choice(input_name) {

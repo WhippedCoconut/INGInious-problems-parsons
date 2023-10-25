@@ -27,6 +27,8 @@ class ParsonsProblem(Problem):
     def __init__(self, problemid, content, translations, taskfs):
         Problem.__init__(self, problemid, content, translations, taskfs)
         self._header = content['header'] if "header" in content else ""
+        self._indentation = True if "indentation" in content else False
+        self._grading = content['grading'] if "grading" in content else ""
         self._choices = []
         if "choices" not in content or not isinstance(content['choices'], (list, tuple)):
             raise Exception(problemid + " does not have choices or choices are not an array")
@@ -66,12 +68,13 @@ class ParsonsProblem(Problem):
     @classmethod
     def parse_problem(self, problem_content):
         parsed_content = Problem.parse_problem(problem_content)
-        print(parsed_content, sys.stdout)
-        if "shuffle" in parsed_content:
-            parsed_content["distractor"] = True
+        if "indentation" in parsed_content:
+            parsed_content["indentation"] = True
+
+        parsed_content["mabite"] = "test"
 
         if "choices" in parsed_content:
-            problem_content["choices"] = [val for _, val in
+            parsed_content["choices"] = [val for _, val in
                                          sorted(iter(parsed_content["choices"].items()), key=lambda x: int(x[0]))]
             for choice in parsed_content["choices"]:
                 if "distractor" in choice:
@@ -97,7 +100,7 @@ class DisplayableParsonsProblem(ParsonsProblem, DisplayableProblem):
         header = ParsableText(self.gettext(language, self._header), "rst",
                               translation=self.get_translation_obj(language))
         return template_helper.render("parsons.html", template_folder=PATH_TO_TEMPLATES,
-                                      inputId=self.get_id(), header=header, choices=self._choices)
+                                      inputId=self.get_id(), header=header, choices=self._choices, indentation=self._indentation)
 
     @classmethod
     def show_editbox(cls, template_helper, key, language):

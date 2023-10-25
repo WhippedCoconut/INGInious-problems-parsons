@@ -15,6 +15,12 @@
 
 <script>
     $(document).ready(function() {
-        new ParsonsDragAndDrop('{{inputId}}')
+        options = {
+            "indent": false
+        }
+        {% if indentation %}
+            options.indent = true
+        {% endif %}
+        dragAndDropDict["{{pid}}_task_DnD"] = new ParsonsDragAndDrop('{{inputId}}', options)
     });
 </script>

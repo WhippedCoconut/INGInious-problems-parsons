@@ -1,5 +1,5 @@
 
-function ParsonsDragAndDrop(itemID) {
+function ParsonsDragAndDrop(itemID, options) {
     this.itemID = itemID;
 
     this.lists = document.querySelectorAll(".parsons-list-" + itemID);
@@ -9,6 +9,7 @@ function ParsonsDragAndDrop(itemID) {
     this.itemsValues = new Array(this.items.length);
     this.itemsIndent = new Array(this.items.length).fill(0);
 
+    this.enableIndentation = options.indent;
 
     this.items.forEach((item) => {
         item.addEventListener("dragstart", (elem) => {
@@ -57,7 +58,9 @@ function ParsonsDragAndDrop(itemID) {
                list.insertBefore(draggingItem, nextItem);
            else if (draggingItem !== null)
                list.appendChild(draggingItem);
-           this.updateIndent(elem.clientX - this.dragStartX, itemID);
+
+           if (this.enableIndentation)
+               this.updateIndent(elem.clientX - this.dragStartX, itemID);
        });
     });
 };
@@ -114,6 +117,15 @@ ParsonsDragAndDrop.prototype.updateResult = function () {
     console.log("value:  " + this.itemsValues);
     console.log("indent: " + this.itemsIndent);
 };
+
+ParsonsDragAndDrop.prototype.toggleIndentation = function() {
+    this.enableIndentation = !this.enableIndentation;
+    if (this.enableIndentation === false){
+        $("[id^=choice-" + this.itemID + "]").css("margin-left", "0px");
+        this.itemsIndent.fill(0);
+        this.updateResult();
+    }
+}
 
 ParsonsDragAndDrop.prototype.getIndex = function (item) {
     return this.items.indexOf(item);
