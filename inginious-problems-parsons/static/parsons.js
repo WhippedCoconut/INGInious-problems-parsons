@@ -1,8 +1,19 @@
-
 let dragAndDropDict = {};
 function studio_init_template_parsons(well, pid, problem) {
+    console.log(problem);
     if ("indentation" in problem)
         $("#indentation-" + pid).click();
+    if ("grading" in problem)
+        $("#grading-" + pid).click();
+
+
+    var editor = registerCodeEditor($("#msg-success-" + pid)[0], 'rst', 1);
+    if("success_msg" in problem)
+        editor.setValue(problem["success_msg"]);
+
+    editor = registerCodeEditor($("#msg-fail-" + pid)[0], 'rst', 1);
+    if("fail_msg" in problem)
+        editor.setValue(problem["fail_msg"]);
 
     jQuery.each(problem["choices"], function(index, elem) {
         elem.index = index;

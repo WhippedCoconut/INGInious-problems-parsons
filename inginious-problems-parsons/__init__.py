@@ -27,8 +27,10 @@ class ParsonsProblem(Problem):
     def __init__(self, problemid, content, translations, taskfs):
         Problem.__init__(self, problemid, content, translations, taskfs)
         self._header = content['header'] if "header" in content else ""
+        self._success_msg = content["success_msg"] if content["success_msg"] != "" else "Success."
+        self._fail_msg = content["fail_msg"] if content["fail_msg"] != "" else "Failed."
         self._indentation = True if "indentation" in content else False
-        self._grading = content['grading'] if "grading" in content else ""
+        self._ranged_grading = True if "grading" in content else False
         self._choices = []
         if "choices" not in content or not isinstance(content['choices'], (list, tuple)):
             raise Exception(problemid + " does not have choices or choices are not an array")
@@ -45,6 +47,7 @@ class ParsonsProblem(Problem):
             if 'indent' in choice:
                 data['indent'] = int(choice['indent'])
             self._choices.append(data)
+        self._size = len(self._choices)
 
     @classmethod
     def get_type(cls):
@@ -58,20 +61,27 @@ class ParsonsProblem(Problem):
 
     def check_answer(self, task_input, language):
         answer = json.loads(task_input[self.get_id()])
+
+        invalid_count = 0
         for i in range(len(self._choices)):
             if self._choices[i]['line'] != answer['lines'][i]:
-                return False, None, ["Wrong lines order"], 0, ""
-            if self._choices[i]['indent'] != answer['indent'][i]:
-                return False, None, ["Wrong indent"], 0, ""
-        return True, None, ["correct answer"], 0, ""
+                invalid_count += 1
+            elif self._choices[i]['indent'] != answer['indent'][i]:
+                invalid_count += 1
+
+        if invalid_count > 0:
+            grade = ((self._size - invalid_count) / self._size) * 100
+            msg = [self._fail_msg, ("Grade: %.2f%%" % grade if self._ranged_grading else "")]
+            return False, None, msg, 0, ""
+        else:
+            msg = [self._success_msg]
+            return True, None, msg, 0, ""
 
     @classmethod
     def parse_problem(self, problem_content):
         parsed_content = Problem.parse_problem(problem_content)
         if "indentation" in parsed_content:
             parsed_content["indentation"] = True
-
-        parsed_content["mabite"] = "test"
 
         if "choices" in parsed_content:
             parsed_content["choices"] = [val for _, val in
@@ -113,6 +123,6 @@ class DisplayableParsonsProblem(ParsonsProblem, DisplayableProblem):
 
 def init(plugin_manager, course_factory, client, plugin_config):
     plugin_manager.add_page('/plugins/parsons/static/<path:path>', StaticMockPage.as_view("parsonsproblemstaticpage"))
-    plugin_manager.add_hook("javascript_header", lambda: "/plugins/parsons/static/parsons.js")
+    plugin_manager.add_hook("javascript_footer", lambda: "/plugins/parsons/static/parsons.js")
     plugin_manager.add_hook("javascript_footer", lambda: "/plugins/parsons/static/parsons_drag_and_drop.js")
     course_factory.get_task_factory().add_problem_type(DisplayableParsonsProblem)

@@ -1,3 +1,4 @@
+<div id="task_alert_{{inputId}}" class="task_alert_problem"></div>
 {{ header | safe }}
 
 <div class="row justify-content-center">
@@ -13,6 +14,7 @@
 
 <input type="text" name="{{inputId}}" value="" class="parsons-result-input-{{inputId}} mt-4 col-12"/>
 
+
 <script>
     $(document).ready(function() {
         options = {
@@ -21,6 +23,6 @@
         {% if indentation %}
             options.indent = true
         {% endif %}
-        dragAndDropDict["{{pid}}_task_DnD"] = new ParsonsDragAndDrop('{{inputId}}', options)
+        dragAndDropDict["{{inputId}}_task_DnD"] = new ParsonsDragAndDrop('{{inputId}}', options)
     });
 </script>
