@@ -1,4 +1,5 @@
 <div id="subproblem_{{ key }}_choice" style="display:none;">
+
     <div class="card-header pl-3 pr-3 pt-2 pb-2 mt-1 mb-1 border border-primary">
         <div class="row justify-content-center">
             <button class="btn btn-danger btn-sm ml-2" type="button" onclick="parsons_delete_choice('PID', CHOICE)">
@@ -12,6 +13,8 @@
             </button>
         </div>
     </div>
+
+
     <div class="modal fade" id="modal-PID-CHOICE" tabindex="-1">
         <div class="modal-dialog modal-xl modal-fullscreen-md-down modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
@@ -23,12 +26,6 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <input type="number" class="col form-control ml-2 {{ key }}_indent_CHOICE"
-                               id="choice-indent-PID-CHOICE" name="problem[PID][choices][CHOICE][indent]"
-                               placeholder="Indentation">
-                        <input type="number" class="col form-control ml-2 {{ key }}_line_CHOICE" id="choice-line-PID-CHOICE"
-                               name="problem[PID][choices][CHOICE][line]" placeholder="Line">
-
                         <div class="col-sm-12 mt-4">
                             <textarea id="choice-conditions-PID-CHOICE" class="form-control {{ key }}_conditions_PID_CHOICE"
                                       name="problem[PID][choices][CHOICE][conditions]"></textarea>
@@ -42,4 +39,5 @@
             </div>
         </div>
     </div>
+
 </div>

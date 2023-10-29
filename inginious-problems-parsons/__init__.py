@@ -31,6 +31,7 @@ class ParsonsProblem(Problem):
         self._fail_msg = content["fail_msg"] if content["fail_msg"] != "" else "Failed."
         self._indentation = True if "indentation" in content else False
         self._ranged_grading = True if "grading" in content else False
+
         self._choices = []
         if "choices" not in content or not isinstance(content['choices'], (list, tuple)):
             raise Exception(problemid + " does not have choices or choices are not an array")
@@ -39,15 +40,14 @@ class ParsonsProblem(Problem):
             if 'content' not in choice:
                 raise Exception("A choice in " + problemid + " does not have content")
             data['content'] = choice['content']
-            if 'conditions' not in choice:
-                raise Exception("A choice in " + problemid + " does not have conditions")
-            data['conditions'] = choice['conditions']
-            if 'line' in choice:
-                data['line'] = int(choice['line'])
-            if 'indent' in choice:
-                data['indent'] = int(choice['indent'])
             self._choices.append(data)
+
         self._size = len(self._choices)
+
+        self.inputs_raw = content["inputs"]
+        inputs = json.loads(self.inputs_raw)
+        self._inputs_lines = inputs["lines"]
+        self._inputs_indent = inputs["indent"]
 
     @classmethod
     def get_type(cls):
@@ -64,9 +64,9 @@ class ParsonsProblem(Problem):
 
         invalid_count = 0
         for i in range(len(self._choices)):
-            if self._choices[i]['line'] != answer['lines'][i]:
+            if self._inputs_lines[i] != answer['lines'][i]:
                 invalid_count += 1
-            elif self._choices[i]['indent'] != answer['indent'][i]:
+            elif self._inputs_indent[i] != answer['indent'][i]:
                 invalid_count += 1
 
         if invalid_count > 0:

@@ -29,9 +29,10 @@
 <div class="form-group row">
     <label for="indentation-PID" class="col-sm-2 control-label"> Enable indentation (2D problem)</label>
     <div class="col-10">
-        <input type="checkbox" id="indentation-PID" name="problem[PID][indentation]" onclick="toggle_indentation('PID')">
+        <input type="checkbox" id="indentation-PID" name="problem[PID][indentation]" onclick="parsons_toggle_indentation('PID')">
     </div>
 </div>
+
 <div class="col-sm-12">
     <div class="card border border-primary mb-3">
         <div class="card-header text-center">
@@ -47,7 +48,7 @@
         </div>
 
         <div id="choices-PID" style="min-height: 100px"
-             class="card-body parsons-list-PID parsons-result-PID">
+             class="card-body parsons-result-PID">
             {# Parsons choice template - Result #}
         </div>
     </div>
@@ -55,11 +56,13 @@
 
     <div class="card border border-primary">
         <h5 class="card-header text-center">Choices - Distractors</h5>
-        <div id="distractors-PID" style="min-height: 100px" class="card-body parsons-list-PID">
+        <div id="distractors-PID" style="min-height: 100px" class="card-body parsons-distractors-PID">
             {# Parsons choice template - Distractors #}
         </div>
     </div>
 </div>
+
+<input id="inputs-PID" type="text" name="problem[PID][inputs]" value="" class="parsons-result-input-PID mt-4 col-12"/>
 
 <script>
     $(document).ready(function () {

@@ -2,8 +2,9 @@
 function ParsonsDragAndDrop(itemID, options) {
     this.itemID = itemID;
 
-    this.lists = document.querySelectorAll(".parsons-list-" + itemID);
     this.resultList  = document.querySelector(".parsons-result-" + itemID);
+    this.distractorList = document.querySelector(".parsons-distractors-" + itemID);
+    this.lists = [this.resultList, this.distractorList];
 
     this.items = $("[id^=choice-" + itemID + "]").toArray();
     this.itemsValues = new Array(this.items.length);
@@ -43,6 +44,9 @@ function ParsonsDragAndDrop(itemID, options) {
                     $(window).scrollTop(scrollY - 3);
                 }, 20)
         });
+
+        this.updateValues()
+        this.updateResult()
     });
 
     this.lists.forEach((list) => {
@@ -63,7 +67,7 @@ function ParsonsDragAndDrop(itemID, options) {
                this.updateIndent(elem.clientX - this.dragStartX, itemID);
        });
     });
-};
+}
 
 ParsonsDragAndDrop.prototype.addDraggable = function (index) {
     let item = document.querySelector("#choice-" + this.itemID + '-' + index);
@@ -90,7 +94,7 @@ ParsonsDragAndDrop.prototype.removeDraggable = function (index) {
     this.items.splice(index, 1); //remove item at index
     this.itemsValues.splice(index, 1);
     this.itemsIndent.splice(index, 1);
-}
+};
 
 ParsonsDragAndDrop.prototype.updateIndent = function (offset) {
     this.itemsIndent[this.draggingItemIndex] = Math.max(0, this.dragStartIndent + Math.round(offset / 50));
@@ -120,6 +124,7 @@ ParsonsDragAndDrop.prototype.updateResult = function () {
 
 ParsonsDragAndDrop.prototype.toggleIndentation = function() {
     this.enableIndentation = !this.enableIndentation;
+    // reset indentation of every item to 0
     if (this.enableIndentation === false){
         $("[id^=choice-" + this.itemID + "]").css("margin-left", "0px");
         this.itemsIndent.fill(0);
@@ -131,6 +136,35 @@ ParsonsDragAndDrop.prototype.getIndex = function (item) {
     return this.items.indexOf(item);
 };
 
+ParsonsDragAndDrop.prototype.loadInput = function (input) {
+    let parsed_input = JSON.parse(input);
+    this.itemsValues = parsed_input.lines;
+    this.itemsIndent = parsed_input.indent;
+
+    let sortedItems = new Array(this.items.length).fill(null);
+    for (let i = 0; i < this.items.length; i++) {
+        if (this.itemsValues[i] === -1) { // remove indentation of distractors
+            this.itemsIndent[i] = 0;
+            sortedItems.splice(this.itemsValues[i], 1);
+            console.log(sortedItems);
+        }
+        else{
+            sortedItems.splice(this.itemsValues[i], 1, this.items[i]);
+            console.log(sortedItems);
+        }
+        // moves every item in the distractor list in order to reorder item in the result list
+        this.distractorList.appendChild(this.items[i]);
+    }
+    this.updateResult();
+
+    //rearrange item from the result list and add the correct amount of indentation
+    sortedItems.forEach((item) => {
+        this.resultList.appendChild(item);
+        let index = this.getIndex(item);
+        $("#choice-" + this.itemID + "-" + index).css("margin-left", this.itemsIndent[this.getIndex(item)] * 60 + "px");
+    });
+};
+
 // From https://stackoverflow.com/questions/18809678/make-html5-draggable-items-scroll-the-page
 var scroll = function (step) {
     var scrollY = $(window).scrollTop();
@@ -138,4 +172,4 @@ var scroll = function (step) {
     if (!stop) {
         setTimeout(function () { scroll(step) }, 20);
     }
-}
+};

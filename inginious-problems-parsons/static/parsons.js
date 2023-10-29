@@ -1,11 +1,9 @@
 let dragAndDropDict = {};
 function studio_init_template_parsons(well, pid, problem) {
-    console.log(problem);
     if ("indentation" in problem)
         $("#indentation-" + pid).click();
     if ("grading" in problem)
         $("#grading-" + pid).click();
-
 
     var editor = registerCodeEditor($("#msg-success-" + pid)[0], 'rst', 1);
     if("success_msg" in problem)
@@ -19,6 +17,8 @@ function studio_init_template_parsons(well, pid, problem) {
         elem.index = index;
         parsons_create_choice(pid, elem);
     });
+
+    parsons_load_problem_input(pid, problem["inputs"]);
 }
 
 function load_input_parsons(submissionid, key, input) {
@@ -74,14 +74,19 @@ function parsons_delete_choice(pid, choice) {
     $('#choice-' + pid + '-' + choice).detach();
 }
 
-function toggle_indentation(pid) {
+function parsons_toggle_indentation(pid) {
     // variable may not be ready
-    if(typeof dragAndDropDict[pid + "_DnD"] !== "undefined"){
+    if(typeof dragAndDropDict[pid + "_DnD"] !== "undefined")
         dragAndDropDict[pid + "_DnD"].toggleIndentation();
-    }
-    else{ // retry in a moment
-        setTimeout(() => toggle_indentation(pid), 250);
-    }
+    else // retry in a moment
+        setTimeout(() => parsons_toggle_indentation(pid), 250);
+}
+
+function parsons_load_problem_input(pid, inputs) {
+    if (typeof dragAndDropDict[pid + "_DnD"] !== "undefined")
+        dragAndDropDict[pid + "_DnD"].loadInput(inputs);
+    else
+        setTimeout(() => parsons_load_problem_input(pid, inputs), 250);
 }
 
 function parsons_toggle_choice(input_name) {
