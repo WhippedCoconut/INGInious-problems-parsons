@@ -2,14 +2,16 @@
 {{ header | safe }}
 
 <div class="row justify-content-center">
-    <div class="parsons-distractors-{{ inputId }} col-12 border border-success border-3" style="min-height: 50px">
+    <h4 class="col-12" style="text-align: center">Drag items from here.</h4>
+    <div id="distractors-{{inputId}}" class="parsons-distractors-{{ inputId }} col-12 pt-3 pb-3 border border-primary" style="min-height: 50px">
         {% for choice in choices %}
             <div id="choice-{{inputId}}-{{choice["index"]}}" class="p-2 mt-1 mb-1 border border-primary" draggable="true">{{choice["content"]}}</div>
         {% endfor %}
     </div>
 </div>
 <div class="row mt-4 justify-content-center" style="min-height: 50px">
-    <div class="parsons-result-{{inputId}} col-12 border border-danger border-3"></div>
+    <h4 class="col-12" style="text-align: center">Drop your solution here.</h4>
+    <div id="result-{{inputId}}" class="parsons-result-{{inputId}} pt-3 pb-3 col-12 border border-primary" style="min-height: 50px"></div>
 </div>
 
 <input type="text" name="{{inputId}}" value="" class="parsons-result-input-{{inputId}} mt-4 col-12"/>

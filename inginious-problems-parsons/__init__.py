@@ -29,6 +29,7 @@ class ParsonsProblem(Problem):
         self._header = content['header'] if "header" in content else ""
         self._success_msg = content["success_msg"] if content["success_msg"] != "" else "Success."
         self._fail_msg = content["fail_msg"] if content["fail_msg"] != "" else "Failed."
+        self._indication = content["indication"]
         self._indentation = True if "indentation" in content else False
         self._ranged_grading = True if "grading" in content else False
 
@@ -63,15 +64,18 @@ class ParsonsProblem(Problem):
         answer = json.loads(task_input[self.get_id()])
 
         invalid_count = 0
+        invalid_items = []  # contains all indexes of invalid items
         for i in range(len(self._choices)):
-            if self._inputs_lines[i] != answer['lines'][i]:
+            if self._inputs_lines[i] != answer['lines'][i]:  # invalid placement
+                invalid_items.append(i)
                 invalid_count += 1
-            elif self._inputs_indent[i] != answer['indent'][i]:
+            elif self._inputs_indent[i] != answer['indent'][i]:  # invalid indentation
+                invalid_items.append(i)
                 invalid_count += 1
 
         if invalid_count > 0:
             grade = ((self._size - invalid_count) / self._size) * 100
-            msg = [self._fail_msg, ("Grade: %.2f%%" % grade if self._ranged_grading else "")]
+            msg = [self._indication, str(invalid_items), self._fail_msg, ("Grade: %.2f%%" % grade if self._ranged_grading else "")]
             return False, None, msg, 0, ""
         else:
             msg = [self._success_msg]

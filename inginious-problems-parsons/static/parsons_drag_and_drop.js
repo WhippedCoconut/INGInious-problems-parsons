@@ -118,8 +118,10 @@ ParsonsDragAndDrop.prototype.updateResult = function () {
     };
     $(".parsons-result-input-" + this.itemID).val(JSON.stringify(result));
 
-    console.log("value:  " + this.itemsValues);
-    console.log("indent: " + this.itemsIndent);
+    console.log({
+        "lines": this.itemsValues,
+        "indent": this.itemsIndent
+    });
 };
 
 ParsonsDragAndDrop.prototype.toggleIndentation = function() {
@@ -146,11 +148,9 @@ ParsonsDragAndDrop.prototype.loadInput = function (input) {
         if (this.itemsValues[i] === -1) { // remove indentation of distractors
             this.itemsIndent[i] = 0;
             sortedItems.splice(this.itemsValues[i], 1);
-            console.log(sortedItems);
         }
         else{
             sortedItems.splice(this.itemsValues[i], 1, this.items[i]);
-            console.log(sortedItems);
         }
         // moves every item in the distractor list in order to reorder item in the result list
         this.distractorList.appendChild(this.items[i]);
