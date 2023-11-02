@@ -1,8 +1,7 @@
-
 function ParsonsDragAndDrop(itemID, options) {
     this.itemID = itemID;
 
-    this.resultList  = document.querySelector(".parsons-result-" + itemID);
+    this.resultList = document.querySelector(".parsons-result-" + itemID);
     this.distractorList = document.querySelector(".parsons-distractors-" + itemID);
     this.lists = [this.resultList, this.distractorList];
 
@@ -14,16 +13,22 @@ function ParsonsDragAndDrop(itemID, options) {
 
     this.items.forEach((item) => {
         item.addEventListener("dragstart", (elem) => {
-           item.classList.add(itemID + "dragging");
-           this.dragStartX = elem.clientX;
-           this.draggingItemIndex = this.getIndex(item);
-           this.dragStartIndent = this.itemsIndent[this.draggingItemIndex];
+            item.classList.add(itemID + "dragging");
+            this.dragStartX = elem.clientX;
+            this.draggingItemIndex = this.getIndex(item);
+            this.dragStartIndent = this.itemsIndent[this.draggingItemIndex];
+
+            // reset item border class to avoid keeping border color of previous feedback
+            item.classList.remove("border-danger");
+            item.classList.remove("border-success");
+            item.classList.add("border");
+            item.classList.add("border-primary");
         });
 
         item.addEventListener("dragend", () => {
-           item.classList.remove(itemID + "dragging");
-           this.updateValues();
-           this.updateResult();
+            item.classList.remove(itemID + "dragging");
+            this.updateValues();
+            this.updateResult();
         });
 
         let scrollTop = false;
@@ -42,7 +47,7 @@ function ParsonsDragAndDrop(itemID, options) {
                 setTimeout(() => {
                     var scrollY = $(window).scrollTop();
                     $(window).scrollTop(scrollY - 3);
-                }, 20)
+                }, 20);
         });
 
         this.updateValues()
@@ -50,22 +55,22 @@ function ParsonsDragAndDrop(itemID, options) {
     });
 
     this.lists.forEach((list) => {
-       list.addEventListener("dragover", (elem) => {
-           elem.preventDefault();
-           let draggingItem = document.querySelector('.' + itemID + "dragging");
-           let otherItems = [...list.querySelectorAll("[id^=choice-" + itemID + "]:not(." + itemID + "dragging)")];
-           let nextItem = otherItems.find(item => {
-               let rect = item.getBoundingClientRect();
-               return elem.clientY <= rect.top + item.offsetHeight / 2;
-           });
-           if (draggingItem !== null && nextItem)
-               list.insertBefore(draggingItem, nextItem);
-           else if (draggingItem !== null)
-               list.appendChild(draggingItem);
+        list.addEventListener("dragover", (elem) => {
+            elem.preventDefault();
+            let draggingItem = document.querySelector('.' + itemID + "dragging");
+            let otherItems = [...list.querySelectorAll("[id^=choice-" + itemID + "]:not(." + itemID + "dragging)")];
+            let nextItem = otherItems.find(item => {
+                let rect = item.getBoundingClientRect();
+                return elem.clientY <= rect.top + item.offsetHeight / 2;
+            });
+            if (draggingItem !== null && nextItem)
+                list.insertBefore(draggingItem, nextItem);
+            else if (draggingItem !== null)
+                list.appendChild(draggingItem);
 
-           if (this.enableIndentation)
-               this.updateIndent(elem.clientX - this.dragStartX, itemID);
-       });
+            if (this.enableIndentation)
+                this.updateIndent(elem.clientX - this.dragStartX, itemID);
+        });
     });
 }
 
@@ -77,16 +82,16 @@ ParsonsDragAndDrop.prototype.addDraggable = function (index) {
     this.itemsIndent.splice(index, 0, 0);  // insert indent 0 at the item index
 
     item.addEventListener("dragstart", (elem) => {
-           item.classList.add(this.itemID + "dragging");
-           this.dragStartX = elem.clientX;
-           this.draggingItemIndex = this.getIndex(item);
-           this.dragStartIndent = this.itemsIndent[this.draggingItemIndex];
-        });
+        item.classList.add(this.itemID + "dragging");
+        this.dragStartX = elem.clientX;
+        this.draggingItemIndex = this.getIndex(item);
+        this.dragStartIndent = this.itemsIndent[this.draggingItemIndex];
+    });
 
     item.addEventListener("dragend", () => {
-       item.classList.remove(this.itemID + "dragging");
-       this.updateValues();
-       this.updateResult();
+        item.classList.remove(this.itemID + "dragging");
+        this.updateValues();
+        this.updateResult();
     });
 };
 
@@ -124,10 +129,10 @@ ParsonsDragAndDrop.prototype.updateResult = function () {
     });
 };
 
-ParsonsDragAndDrop.prototype.toggleIndentation = function() {
+ParsonsDragAndDrop.prototype.toggleIndentation = function () {
     this.enableIndentation = !this.enableIndentation;
     // reset indentation of every item to 0
-    if (this.enableIndentation === false){
+    if (this.enableIndentation === false) {
         $("[id^=choice-" + this.itemID + "]").css("margin-left", "0px");
         this.itemsIndent.fill(0);
         this.updateResult();
@@ -148,8 +153,7 @@ ParsonsDragAndDrop.prototype.loadInput = function (input) {
         if (this.itemsValues[i] === -1) { // remove indentation of distractors
             this.itemsIndent[i] = 0;
             sortedItems.splice(this.itemsValues[i], 1);
-        }
-        else{
+        } else {
             sortedItems.splice(this.itemsValues[i], 1, this.items[i]);
         }
         // moves every item in the distractor list in order to reorder item in the result list
@@ -170,6 +174,8 @@ var scroll = function (step) {
     var scrollY = $(window).scrollTop();
     $(window).scrollTop(scrollY + step);
     if (!stop) {
-        setTimeout(function () { scroll(step) }, 20);
+        setTimeout(function () {
+            scroll(step)
+        }, 20);
     }
 };

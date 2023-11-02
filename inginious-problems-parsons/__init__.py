@@ -64,21 +64,22 @@ class ParsonsProblem(Problem):
         answer = json.loads(task_input[self.get_id()])
 
         invalid_count = 0
-        invalid_items = []  # contains all indexes of invalid items
-        for i in range(len(self._choices)):
+        # one value for each item, {0: ok, 1: wrong placement, 2: wrong indent}
+        items_feedback = [0 for _ in range(self._size)]
+        for i in range(self._size):
             if self._inputs_lines[i] != answer['lines'][i]:  # invalid placement
-                invalid_items.append(i)
+                items_feedback[i] = 1
                 invalid_count += 1
             elif self._inputs_indent[i] != answer['indent'][i]:  # invalid indentation
-                invalid_items.append(i)
+                items_feedback[i] = 2
                 invalid_count += 1
 
         if invalid_count > 0:
             grade = ((self._size - invalid_count) / self._size) * 100
-            msg = [self._indication, str(invalid_items), self._fail_msg, ("Grade: %.2f%%" % grade if self._ranged_grading else "")]
+            msg = [self._indication, str(items_feedback), self._fail_msg, ("Grade: %.2f%%" % grade if self._ranged_grading else "")]
             return False, None, msg, 0, ""
         else:
-            msg = [self._success_msg]
+            msg = [self._indication, str(items_feedback), self._success_msg]
             return True, None, msg, 0, ""
 
     @classmethod
