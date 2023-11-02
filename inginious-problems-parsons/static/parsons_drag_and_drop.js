@@ -122,11 +122,6 @@ ParsonsDragAndDrop.prototype.updateResult = function () {
         indent: this.itemsIndent
     };
     $(".parsons-result-input-" + this.itemID).val(JSON.stringify(result));
-
-    console.log({
-        "lines": this.itemsValues,
-        "indent": this.itemsIndent
-    });
 };
 
 ParsonsDragAndDrop.prototype.toggleIndentation = function () {

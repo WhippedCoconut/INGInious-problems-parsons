@@ -16,7 +16,7 @@
 
 
     <div class="modal fade" id="modal-PID-CHOICE" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-fullscreen-md-down modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Choice #CHOICE - Advanced parameters</h5>
@@ -25,10 +25,20 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-sm-12 mt-4">
-                            <textarea id="choice-conditions-PID-CHOICE" class="form-control {{ key }}_conditions_PID_CHOICE"
-                                      name="problem[PID][choices][CHOICE][conditions]"></textarea>
+
+                    <div class="form-group row">
+                        <label for="choice-success-msg-PID-CHOICE" class="col-sm-2 control-label">Success message</label>
+                        <div class="col-10">
+                            <input type="text" id="choice-success-msg-PID-CHOICE" class="form-control" name="problem[PID][choices][CHOICE][success_msg]"
+                                placeholder="An optional success message">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="choice-fail-msg-PID-CHOICE" class="col-sm-2 control-label">Failed message</label>
+                        <div class="col-10">
+                            <input type="text" id="choice-fail-msg-PID-CHOICE" class="form-control" name="problem[PID][choices][CHOICE][fail_msg]"
+                                placeholder="An optional fail message">
                         </div>
                     </div>
 

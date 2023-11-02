@@ -85,10 +85,10 @@ function parsons_create_choice(pid, choice_data){
     if("content" in choice_data){
         $("#choice-content-" + pid + '-' + choice_data["index"]).val(choice_data["content"]);
     }
-
-    var editor = registerCodeEditor($("#choice-conditions-" + pid + '-' + index, new_row)[0], 'rst', 1);
-    if("conditions" in choice_data)
-        editor.setValue(choice_data["conditions"]);
+    if ("success_msg" in choice_data)
+        $("#choice-success-msg-" + pid + "-" + index).val(choice_data["success_msg"]);
+    if ("fail_msg" in choice_data)
+        $("#choice-fail-msg-" + pid + "-" + index).val(choice_data["fail_msg"]);
 
     if (Object.keys(choice_data).length === 0)
         dragAndDropDict[pid].addDraggable(index);

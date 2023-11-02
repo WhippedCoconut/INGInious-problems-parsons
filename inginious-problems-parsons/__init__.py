@@ -40,6 +40,10 @@ class ParsonsProblem(Problem):
             data = {"index": index}
             if 'content' not in choice:
                 raise Exception("A choice in " + problemid + " does not have content")
+            if "fail_msg" in choice:
+                data["fail_msg"] = choice["fail_msg"]
+            if "success_msg" in choice:
+                data["success_msg"] = choice["success_msg"]
             data['content'] = choice['content']
             self._choices.append(data)
 
@@ -64,22 +68,29 @@ class ParsonsProblem(Problem):
         answer = json.loads(task_input[self.get_id()])
 
         invalid_count = 0
+        block_msg = ""
         # one value for each item, {0: ok, 1: wrong placement, 2: wrong indent}
         items_feedback = [0 for _ in range(self._size)]
         for i in range(self._size):
             if self._inputs_lines[i] != answer['lines'][i]:  # invalid placement
                 items_feedback[i] = 1
                 invalid_count += 1
+                if "fail_msg" in self._choices[i]:
+                    block_msg += ("\n  - " + self._choices[i]["fail_msg"])
             elif self._inputs_indent[i] != answer['indent'][i]:  # invalid indentation
                 items_feedback[i] = 2
                 invalid_count += 1
+                if "fail_msg" in self._choices[i]:
+                    block_msg += ("\n  - " + self._choices[i]["fail_msg"])
+            elif "success_msg" in self._choices[i]:
+                block_msg += ("\n  - " + self._choices[i]["success_msg"])
 
         if invalid_count > 0:
             grade = ((self._size - invalid_count) / self._size) * 100
-            msg = [self._indication, str(items_feedback), self._fail_msg, ("Grade: %.2f%%" % grade if self._ranged_grading else "")]
+            msg = [self._indication, str(items_feedback), (self._fail_msg + block_msg), ("Grade: %.2f%%" % grade if self._ranged_grading else "")]
             return False, None, msg, 0, ""
         else:
-            msg = [self._indication, str(items_feedback), self._success_msg]
+            msg = [self._indication, str(items_feedback), (self._success_msg + block_msg)]
             return True, None, msg, 0, ""
 
     @classmethod
@@ -92,8 +103,10 @@ class ParsonsProblem(Problem):
             parsed_content["choices"] = [val for _, val in
                                          sorted(iter(parsed_content["choices"].items()), key=lambda x: int(x[0]))]
             for choice in parsed_content["choices"]:
-                if "distractor" in choice:
-                    choice["distractor"] = True
+                if choice["success_msg"] == "":
+                    del choice["success_msg"]
+                if choice["fail_msg"] == "":
+                    del choice["fail_msg"]
         print(parsed_content, sys.stdout)
         return parsed_content
 
