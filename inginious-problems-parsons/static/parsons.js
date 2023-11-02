@@ -28,8 +28,7 @@ function studio_init_template_parsons(well, pid, problem) {
 }
 
 function load_input_parsons(submissionid, key, input) {
-    console.log(key);
-    console.log(input);
+    parsons_load_problem_input(key, input[key]);
 }
 
 function load_feedback_parsons(key, content) {
@@ -92,25 +91,25 @@ function parsons_create_choice(pid, choice_data){
         editor.setValue(choice_data["conditions"]);
 
     if (Object.keys(choice_data).length === 0)
-        dragAndDropDict[pid + "_DnD"].addDraggable(index);
+        dragAndDropDict[pid].addDraggable(index);
 }
 
 function parsons_delete_choice(pid, choice) {
-    dragAndDropDict[pid + "_DnD"].removeDraggable(choice)
+    dragAndDropDict[pid].removeDraggable(choice)
     $('#choice-' + pid + '-' + choice).detach();
 }
 
 function parsons_toggle_indentation(pid) {
     // variable may not be ready
-    if(typeof dragAndDropDict[pid + "_DnD"] !== "undefined")
-        dragAndDropDict[pid + "_DnD"].toggleIndentation();
+    if(typeof dragAndDropDict[pid] !== "undefined")
+        dragAndDropDict[pid].toggleIndentation();
     else // retry in a moment
         setTimeout(() => parsons_toggle_indentation(pid), 250);
 }
 
 function parsons_load_problem_input(pid, inputs) {
-    if (typeof dragAndDropDict[pid + "_DnD"] !== "undefined")
-        dragAndDropDict[pid + "_DnD"].loadInput(inputs);
+    if (typeof dragAndDropDict[pid] !== "undefined")
+        dragAndDropDict[pid].loadInput(inputs);
     else
         setTimeout(() => parsons_load_problem_input(pid, inputs), 250);
 }
