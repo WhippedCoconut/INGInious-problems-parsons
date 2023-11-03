@@ -18,11 +18,15 @@ function ParsonsDragAndDrop(itemID, options) {
             this.draggingItemIndex = this.getIndex(item);
             this.dragStartIndent = this.itemsIndent[this.draggingItemIndex];
 
-            // reset item border class to avoid keeping border color of previous feedback
-            item.classList.remove("border-danger");
-            item.classList.remove("border-success");
-            item.classList.add("border");
-            item.classList.add("border-primary");
+            if (!options.edit){
+                // reset all items border class to avoid keeping border color of previous feedback
+                this.items.forEach((i) => {
+                    i.classList.remove("border-danger");
+                    i.classList.remove("border-success");
+                    i.classList.add("border");
+                    i.classList.add("border-primary");
+                });
+            }
         });
 
         item.addEventListener("dragend", () => {
@@ -80,6 +84,8 @@ ParsonsDragAndDrop.prototype.addDraggable = function (index) {
     this.items.splice(index, 0, item); // insert item at index
     this.itemsValues.splice(index, 0, -1); // insert value -1 at the item index
     this.itemsIndent.splice(index, 0, 0);  // insert indent 0 at the item index
+    this.updateValues();
+    this.updateResult();
 
     item.addEventListener("dragstart", (elem) => {
         item.classList.add(this.itemID + "dragging");

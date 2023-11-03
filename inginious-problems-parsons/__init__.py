@@ -23,6 +23,7 @@ class StaticMockPage(INGIniousPage):
     def POST(self, path):
         return self.GET(path)
 
+
 class ParsonsProblem(Problem):
     def __init__(self, problemid, content, translations, taskfs):
         Problem.__init__(self, problemid, content, translations, taskfs)
@@ -65,7 +66,16 @@ class ParsonsProblem(Problem):
         return str
 
     def check_answer(self, task_input, language):
-        answer = json.loads(task_input[self.get_id()])
+        # if submission is reloaded by course admin, answer input is a tuple, not a string anymore
+        if type(task_input[self.get_id()]) is tuple:
+            answer = json.loads(task_input[self.get_id()][0])
+        else:
+            answer = json.loads(task_input[self.get_id()])
+
+        if self._indentation:
+            checking = auto_check(answer, self._choices)
+            if checking:
+                return checking
 
         invalid_count = 0
         block_msg = ""
@@ -77,17 +87,17 @@ class ParsonsProblem(Problem):
                 invalid_count += 1
                 if "fail_msg" in self._choices[i]:
                     block_msg += ("\n  - " + self._choices[i]["fail_msg"])
-            elif self._inputs_indent[i] != answer['indent'][i]:  # invalid indentation
+            elif self._inputs_lines[i] != -1 and self._inputs_indent[i] != answer['indent'][i]:  # invalid indentation
                 items_feedback[i] = 2
                 invalid_count += 1
                 if "fail_msg" in self._choices[i]:
                     block_msg += ("\n  - " + self._choices[i]["fail_msg"])
             elif "success_msg" in self._choices[i]:
                 block_msg += ("\n  - " + self._choices[i]["success_msg"])
-
         if invalid_count > 0:
             grade = ((self._size - invalid_count) / self._size) * 100
-            msg = [self._indication, str(items_feedback), (self._fail_msg + block_msg), ("Grade: %.2f%%" % grade if self._ranged_grading else "")]
+            msg = [self._indication, str(items_feedback), (self._fail_msg + block_msg),
+                   ("Grade: %.2f%%" % grade if self._ranged_grading else "")]
             return False, None, msg, 0, ""
         else:
             msg = [self._indication, str(items_feedback), (self._success_msg + block_msg)]
@@ -107,13 +117,13 @@ class ParsonsProblem(Problem):
                     del choice["success_msg"]
                 if choice["fail_msg"] == "":
                     del choice["fail_msg"]
-        print(parsed_content, sys.stdout)
         return parsed_content
 
     @classmethod
     def get_text_fields(cls):
         print("GET TEXT FIELD", sys.stdout)
         return Problem.get_text_fields()
+
 
 class DisplayableParsonsProblem(ParsonsProblem, DisplayableProblem):
     def __init__(self, problemid, content, translations, taskfs):
@@ -128,7 +138,8 @@ class DisplayableParsonsProblem(ParsonsProblem, DisplayableProblem):
         header = ParsableText(self.gettext(language, self._header), "rst",
                               translation=self.get_translation_obj(language))
         return template_helper.render("parsons.html", template_folder=PATH_TO_TEMPLATES,
-                                      inputId=self.get_id(), header=header, choices=self._choices, indentation=self._indentation)
+                                      inputId=self.get_id(), header=header, choices=self._choices,
+                                      indentation=self._indentation)
 
     @classmethod
     def show_editbox(cls, template_helper, key, language):
@@ -144,3 +155,27 @@ def init(plugin_manager, course_factory, client, plugin_config):
     plugin_manager.add_hook("javascript_footer", lambda: "/plugins/parsons/static/parsons.js")
     plugin_manager.add_hook("javascript_footer", lambda: "/plugins/parsons/static/parsons_drag_and_drop.js")
     course_factory.get_task_factory().add_problem_type(DisplayableParsonsProblem)
+
+
+def auto_check(task_input, choices):
+    n = len(choices)
+    sorted_indent = [-1 for _ in range(n)]
+    block_items = []
+    for i in range(n):
+        if choices[i]["content"][-1] == ':':
+            block_items.append(task_input["lines"][i])
+        if task_input["lines"][i] != -1:
+            sorted_indent[task_input["lines"][i]] = task_input["indent"][i]
+
+    # check for wrong indentation
+    for i in range(n - 1):
+        if sorted_indent[i + 1] == -1:
+            return None
+
+        diff_indent = sorted_indent[i + 1] - sorted_indent[i]
+        if i in block_items and diff_indent < 1:
+            msg = ['0', "[ ]", "The program fails to compile: there is at least one empty loop or statement."]
+            return False, None, msg, 0, ""
+        if diff_indent > 1 or (i not in block_items and diff_indent > 0):
+            msg = ['0', "[ ]", "The program fails to compile: the indentation is not correct."]
+            return False, None, msg, 0, ""
