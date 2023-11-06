@@ -43,13 +43,13 @@ function ParsonsDragAndDrop(itemID, options) {
 
             if (scrollBot)
                 setTimeout(() => {
-                    var scrollY = $(window).scrollTop();
+                    let scrollY = $(window).scrollTop();
                     $(window).scrollTop(scrollY + 3);
                 }, 20)
 
             if (scrollTop)
                 setTimeout(() => {
-                    var scrollY = $(window).scrollTop();
+                    let scrollY = $(window).scrollTop();
                     $(window).scrollTop(scrollY - 3);
                 }, 20);
         });
@@ -153,6 +153,7 @@ ParsonsDragAndDrop.prototype.loadInput = function (input) {
     for (let i = 0; i < this.items.length; i++) {
         if (this.itemsValues[i] === -1) { // remove indentation of distractors
             this.itemsIndent[i] = 0;
+            $("#choice-" + this.itemID + "-" + i).css("margin-left", "0px");
             sortedItems.splice(this.itemsValues[i], 1);
         } else {
             sortedItems.splice(this.itemsValues[i], 1, this.items[i]);
@@ -171,8 +172,8 @@ ParsonsDragAndDrop.prototype.loadInput = function (input) {
 };
 
 // From https://stackoverflow.com/questions/18809678/make-html5-draggable-items-scroll-the-page
-var scroll = function (step) {
-    var scrollY = $(window).scrollTop();
+let scroll = function (step) {
+    let scrollY = $(window).scrollTop();
     $(window).scrollTop(scrollY + step);
     if (!stop) {
         setTimeout(function () {

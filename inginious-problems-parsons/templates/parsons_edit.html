@@ -23,7 +23,7 @@
     <label for="indication-PID" class="col-sm-2 control-label">Errors indications level</label>
     <div class="col-sm-10">
         <select id="indication-PID" class="form-control" name="problem[PID][indication]">
-            <option selected value="0">Disabled</option>
+            <option selected="selected" value="0">Disabled</option>
             <option value="1">Low (errors in red)</option>
             <option disabled value="2">Medium indication (errors in red, wrong indent or wrong placement in orange) **WIP**</option>
             <option disabled value="3">Full indication (errors in red, wrong indent in yellow, wrong placement in purple) **WIP**</option>
@@ -53,7 +53,7 @@
                 <i class="fa fa-plus"></i>
                 Add new choice
             </button>
-            <button class="btn btn-info mt-2" type="button" onclick="">
+            <button class="btn btn-info mt-2" type="button" onclick="parsons_generate_from_file('PID')">
                 <i class="fa fa-file"></i>
                 Generate from file
             </button>

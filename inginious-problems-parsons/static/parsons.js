@@ -9,7 +9,8 @@ function studio_init_template_parsons(well, pid, problem) {
     if("fail_msg" in problem)
         editor.setValue(problem["fail_msg"]);
     // Level of indications
-    $("#indication-" + pid).val(problem["indication"]).change();
+    if ("indication" in problem)
+        $("#indication-" + pid).val(problem["indication"]).change();
     // Ranged or boolean grading
     if ("grading" in problem)
         $("#grading-" + pid).click();
@@ -32,10 +33,12 @@ function load_input_parsons(submissionid, key, input) {
 }
 
 function load_feedback_parsons(key, content) {
-    let parsing = parse_feedback_content(content[1]);
+    let parsing = parsons_parse_feedback_content(content[1]);
     load_feedback_code(key, [content[0], parsing.feedback]);
     for (let index = 0; index < parsing.table.length; index++) {
         let item = $("#choice-" + key + "-" + index);
+        // reset previous feedback if any
+        item.removeClass("border-danger").removeClass("border-success").addClass("border border-primary");
         if (parsing.indication === '1' && item.parent().attr('id') === ("result-" + key)){
             if (parsing.table[index] !== "0")
                 item.removeClass("border border-primary").addClass("border-danger");
@@ -55,7 +58,7 @@ function load_feedback_parsons(key, content) {
  * feedbackContent is the written feedback that have to be displayed
  * returns a dictionary {indicationValue, indexTable, feedbackContent}
  */
-function parse_feedback_content(content){
+function parsons_parse_feedback_content(content){
     let result = {};
     result.indication = content[3];
     result.table = content.substring(13, content.indexOf("]")).split(", ");
@@ -82,15 +85,16 @@ function parsons_create_choice(pid, choice_data){
         .html(new_row_content);
     $("#choices-" + pid, well).append(new_row);
 
-    if("content" in choice_data){
-        $("#choice-content-" + pid + '-' + choice_data["index"]).val(choice_data["content"]);
-    }
+    if("content" in choice_data)
+        $("#choice-content-" + pid + '-' + index).val(choice_data["content"]);
     if ("success_msg" in choice_data)
         $("#choice-success-msg-" + pid + "-" + index).val(choice_data["success_msg"]);
     if ("fail_msg" in choice_data)
         $("#choice-fail-msg-" + pid + "-" + index).val(choice_data["fail_msg"]);
 
-    if (Object.keys(choice_data).length === 0)
+    // enable drag and drop for the new item if it is added manually
+    // when added manually, it has no given index
+    if (!("index" in choice_data))
         dragAndDropDict[pid].addDraggable(index);
 }
 
@@ -108,10 +112,29 @@ function parsons_toggle_indentation(pid) {
 }
 
 function parsons_load_problem_input(pid, inputs) {
+    if (typeof inputs === "undefined")
+        return;
     if (typeof dragAndDropDict[pid] !== "undefined")
         dragAndDropDict[pid].loadInput(inputs);
     else
         setTimeout(() => parsons_load_problem_input(pid, inputs), 250);
+}
+
+function parsons_generate_from_file(pid) {
+    let input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = () => {
+        let file = input.files[0];
+        file.text().then((str) => {
+            let itemsContent = str.split('\n');
+            itemsContent.forEach((content) => {
+                if (content !== "")
+                    parsons_create_choice(pid, {"content": content});
+            });
+        });
+        dragAndDropDict[pid].updateResult();
+    };
+    input.click();
 }
 
 function parsons_toggle_choice(input_name) {
