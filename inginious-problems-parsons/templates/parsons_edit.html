@@ -80,4 +80,9 @@
     $(document).ready(function () {
         dragAndDropDict["PID"] = new ParsonsDragAndDrop('PID', {"edit": true});
     });
+
+    function textarea_auto_height(elem){
+        elem.style.height = "32px"; // base height for only one line
+        elem.style.height = (elem.scrollHeight) + "px"; // multiline height = scrollBar height
+    }
 </script>

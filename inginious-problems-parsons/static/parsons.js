@@ -1,7 +1,7 @@
 let dragAndDropDict = {};
 function studio_init_template_parsons(well, pid, problem) {
     // Success message
-    var editor = registerCodeEditor($("#msg-success-" + pid)[0], 'rst', 1);
+    let editor = registerCodeEditor($("#msg-success-" + pid)[0], 'rst', 1);
     if("success_msg" in problem)
         editor.setValue(problem["success_msg"]);
     // Failed message
@@ -67,9 +67,9 @@ function parsons_parse_feedback_content(content){
 }
 
 function parsons_create_choice(pid, choice_data){
-    var well = $(studio_get_problem(pid));
+    let well = $(studio_get_problem(pid));
 
-    var index = 0;
+    let index = 0;
     if ("index" in choice_data)
         index = choice_data["index"];
     else {
@@ -77,16 +77,21 @@ function parsons_create_choice(pid, choice_data){
         index++;
     }
 
-    var row = $("#subproblem_parsons_choice").html();
-    var new_row_content = row.replace(/PID/g, pid).replace(/CHOICE/g, index);
-    var new_row = $("<div></div>")
+    let row = $("#subproblem_parsons_choice").html();
+    let new_row_content = row.replace(/PID/g, pid).replace(/CHOICE/g, index);
+    let new_row = $("<div></div>")
         .attr('id', 'choice-' + pid + '-' + index)
         .attr('draggable', 'True')
         .html(new_row_content);
     $("#choices-" + pid, well).append(new_row);
 
-    if("content" in choice_data)
-        $("#choice-content-" + pid + '-' + index).val(choice_data["content"]);
+    if("content" in choice_data){
+        const area = $("#choice-content-" + pid + '-' + index);
+        area.val(choice_data["content"]);
+
+        // set the height of the content in case of multi-line
+        area.attr('rows', choice_data["content"].split('\n').length);
+    }
     if ("success_msg" in choice_data)
         $("#choice-success-msg-" + pid + "-" + index).val(choice_data["success_msg"]);
     if ("fail_msg" in choice_data)
@@ -104,7 +109,7 @@ function parsons_delete_choice(pid, choice) {
 }
 
 function parsons_toggle_indentation(pid) {
-    // variable may not be ready
+    // letiable may not be ready
     if(typeof dragAndDropDict[pid] !== "undefined")
         dragAndDropDict[pid].toggleIndentation();
     else // retry in a moment
@@ -138,12 +143,12 @@ function parsons_generate_from_file(pid) {
 }
 
 function parsons_toggle_choice(input_name) {
-    var checkbox = $("input[name='" + input_name + "']");
+    let checkbox = $("input[name='" + input_name + "']");
     checkbox.click();
-    var btn = checkbox.next("button");
+    let btn = checkbox.next("button");
     btn.toggleClass("btn-primary");
     btn.toggleClass("btn-success");
-    var icon = btn.find("i");
+    let icon = btn.find("i");
     icon.toggleClass("fa-times");
     icon.toggleClass("fa-check");
 }

@@ -5,8 +5,8 @@
             <button class="btn btn-danger btn-sm ml-2" type="button" onclick="parsons_delete_choice('PID', CHOICE)">
                 <i class="fa fa-trash"></i>
             </button>
-            <input type="text" class="col form-control {{ key }}_content_CHOICE ml-1" id="choice-content-PID-CHOICE"
-                   name="problem[PID][choices][CHOICE][content]" placeholder="[EMPTY]">
+            <textarea rows="1" class="col overflow-hidden form-control {{ key }}_content_CHOICE ml-1" style="resize: none" id="choice-content-PID-CHOICE"
+                   name="problem[PID][choices][CHOICE][content]" placeholder="[EMPTY]" onkeyup="textarea_auto_height(this)"></textarea>
             <button class="btn btn-sm btn-primary ml-1 mr-2" type="button" data-toggle="modal"
                     data-target="#modal-PID-CHOICE">
                 <i class="fa fa-plus-square"></i>
@@ -49,5 +49,4 @@
             </div>
         </div>
     </div>
-
 </div>
