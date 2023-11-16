@@ -67,8 +67,6 @@ function parsons_parse_feedback_content(content){
 }
 
 function parsons_create_choice(pid, choice_data){
-    let well = $(studio_get_problem(pid));
-
     let index = 0;
     if ("index" in choice_data)
         index = choice_data["index"];
@@ -81,9 +79,16 @@ function parsons_create_choice(pid, choice_data){
     let new_row_content = row.replace(/PID/g, pid).replace(/CHOICE/g, index);
     let new_row = $("<div></div>")
         .attr('id', 'choice-' + pid + '-' + index)
-        .attr('draggable', 'True')
         .html(new_row_content);
-    $("#choices-" + pid, well).append(new_row);
+    if ("distractor" in choice_data){
+        $("#choice-create-distractor-" + pid + "-" + index, new_row).detach();
+        $("#distractors-" + pid).append(new_row);
+        $("#choice-distractor-" + pid + "-" + index).val(choice_data["distractor"]);
+    }
+    else {
+        new_row.attr('draggable', 'True');
+        $("#choices-" + pid).append(new_row);
+    }
 
     if("content" in choice_data){
         const area = $("#choice-content-" + pid + '-' + index);
@@ -97,15 +102,24 @@ function parsons_create_choice(pid, choice_data){
     if ("fail_msg" in choice_data)
         $("#choice-fail-msg-" + pid + "-" + index).val(choice_data["fail_msg"]);
 
-    // enable drag and drop for the new item if it is added manually
+    // enable drag and drop for the new item if it is added manually and not a distractor
     // when added manually, it has no given index
-    if (!("index" in choice_data))
+    if (!("distractor" in choice_data) && !("index" in choice_data))
         dragAndDropDict[pid].addDraggable(index);
+    else if (!("index" in choice_data))
+        dragAndDropDict[pid].addDistractor(index);
 }
 
 function parsons_delete_choice(pid, choice) {
     dragAndDropDict[pid].removeDraggable(choice)
-    $('#choice-' + pid + '-' + choice).detach();
+}
+
+function parsons_create_distractor(pid, id){
+    const choice_data = {
+        "distractor": id,
+        "content": $("#choice-content-" + pid + "-" + id).val()
+    }
+    parsons_create_choice(pid, choice_data);
 }
 
 function parsons_toggle_indentation(pid) {

@@ -117,6 +117,9 @@ class ParsonsProblem(Problem):
                     del choice["success_msg"]
                 if choice["fail_msg"] == "":
                     del choice["fail_msg"]
+                if choice["distractor"] == "":
+                    del choice["distractor"]
+        print(parsed_content, sys.stdout)
         return parsed_content
 
     @classmethod

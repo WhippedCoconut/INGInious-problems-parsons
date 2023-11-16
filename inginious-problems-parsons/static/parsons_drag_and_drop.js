@@ -3,9 +3,15 @@ function ParsonsDragAndDrop(itemID, options) {
 
     this.resultList = document.querySelector(".parsons-result-" + itemID);
     this.distractorList = document.querySelector(".parsons-distractors-" + itemID);
-    this.lists = [this.resultList, this.distractorList];
+    if (options.edit) // distractors are not draggable in the edit page
+        this.lists = [this.resultList];
+    else
+        this.lists = [this.resultList, this.distractorList];
 
-    this.items = $("[id^=choice-" + itemID + "]").toArray();
+    // get all items sorted by id, sorted is important when reloading the page with distractors on the edit page
+    this.items = $("[id^=choice-" + itemID + "]").toArray().sort(function (a, b) {
+        return a.id.localeCompare(b.id);
+    });
     this.itemsValues = new Array(this.items.length);
     this.itemsIndent = new Array(this.items.length).fill(0);
 
@@ -101,10 +107,24 @@ ParsonsDragAndDrop.prototype.addDraggable = function (index) {
     });
 };
 
-ParsonsDragAndDrop.prototype.removeDraggable = function (index) {
+ParsonsDragAndDrop.prototype.removeDraggable = function (id) {
+    let item = document.querySelector("#choice-" + this.itemID + "-" + id);
+    let index = this.items.indexOf(item);
     this.items.splice(index, 1); //remove item at index
     this.itemsValues.splice(index, 1);
     this.itemsIndent.splice(index, 1);
+    $('#choice-' + this.itemID + '-' + id).detach();
+    this.updateValues();
+    this.updateResult();
+};
+
+ParsonsDragAndDrop.prototype.addDistractor = function (index) {
+    let distractor = document.querySelector("#choice-" + this.itemID + '-' + index);
+    this.items.splice(index, 0, distractor); // insert item at index
+    this.itemsValues.splice(index, 0, -1); // insert value -1 at the item index
+    this.itemsIndent.splice(index, 0, 0);  // insert indent 0 at the item index
+    this.updateValues();
+    this.updateResult();
 };
 
 ParsonsDragAndDrop.prototype.updateIndent = function (offset) {
@@ -151,6 +171,7 @@ ParsonsDragAndDrop.prototype.loadInput = function (input) {
 
     let sortedItems = new Array(this.items.length).fill(null);
     for (let i = 0; i < this.items.length; i++) {
+
         if (this.itemsValues[i] === -1) { // remove indentation of distractors
             this.itemsIndent[i] = 0;
             $("#choice-" + this.itemID + "-" + i).css("margin-left", "0px");

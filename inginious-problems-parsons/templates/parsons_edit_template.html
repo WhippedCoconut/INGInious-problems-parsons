@@ -11,6 +11,8 @@
                     data-target="#modal-PID-CHOICE">
                 <i class="fa fa-plus-square"></i>
             </button>
+
+            <input style="display: none" type="number" id="choice-distractor-PID-CHOICE" name="problem[PID][choices][CHOICE][distractor]">
         </div>
     </div>
 
@@ -44,6 +46,7 @@
 
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-info" id="choice-create-distractor-PID-CHOICE" onclick="parsons_create_distractor('PID', CHOICE)">Create distractor</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
