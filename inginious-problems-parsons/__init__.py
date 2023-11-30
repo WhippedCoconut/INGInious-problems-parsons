@@ -37,8 +37,9 @@ class ParsonsProblem(Problem):
         self._choices = []
         if "choices" not in content or not isinstance(content['choices'], (list, tuple)):
             raise Exception(problemid + " does not have choices or choices are not an array")
-        for index, choice in enumerate(content["choices"]):
-            data = {"index": index}
+        #  TODO: separate paired distractor from choices
+        for choice in content["choices"]:
+            data = {}
             if 'content' not in choice:
                 raise Exception("A choice in " + problemid + " does not have content")
             if "fail_msg" in choice:
@@ -46,11 +47,11 @@ class ParsonsProblem(Problem):
             if "success_msg" in choice:
                 data["success_msg"] = choice["success_msg"]
             data['content'] = choice['content']
+            data["id"] = choice["id"]
             self._choices.append(data)
-
         self._size = len(self._choices)
-
         self.inputs_raw = content["inputs"]
+
         inputs = json.loads(self.inputs_raw)
         self._inputs_lines = inputs["lines"]
         self._inputs_indent = inputs["indent"]
@@ -119,7 +120,8 @@ class ParsonsProblem(Problem):
                     del choice["fail_msg"]
                 if choice["distractor"] == "":
                     del choice["distractor"]
-        print(parsed_content, sys.stdout)
+                if "pair" in choice:
+                    choice["pair"] = True
         return parsed_content
 
     @classmethod

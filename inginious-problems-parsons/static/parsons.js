@@ -19,8 +19,7 @@ function studio_init_template_parsons(well, pid, problem) {
         $("#indentation-" + pid).click();
 
     // re-create existing choices
-    jQuery.each(problem["choices"], function(index, elem) {
-        elem.index = index;
+    jQuery.each(problem["choices"], function(_, elem) {
         parsons_create_choice(pid, elem);
     });
 
@@ -68,8 +67,8 @@ function parsons_parse_feedback_content(content){
 
 function parsons_create_choice(pid, choice_data){
     let index = 0;
-    if ("index" in choice_data)
-        index = choice_data["index"];
+    if ("id" in choice_data)
+        index = choice_data["id"];
     else {
         while($('#choice-' + pid + '-' + index).length !== 0)
         index++;
@@ -83,6 +82,15 @@ function parsons_create_choice(pid, choice_data){
     if ("distractor" in choice_data){
         $("#choice-create-distractor-" + pid + "-" + index, new_row).detach();
         $("#distractors-" + pid).append(new_row);
+        let new_modal_input =
+            "<div class=\"form-group row\">\n" +
+            "    <label for=\"choice-pair-PID-CHOICE\" class=\"col-sm-2 control-label\">Paired distractor</label>\n" +
+            "    <div class=\"col-10\">\n" +
+            "        <input type=\"checkbox\" id=\"choice-fail-msg-PID-CHOICE\" name=\"problem[PID][choices][CHOICE][pair]\">\n" +
+            "    </div>\n" +
+            "</div>"
+        new_modal_input = new_modal_input.replace(/PID/g, pid).replace(/CHOICE/g, index);
+        $("#modal-body-" + pid + "-" + index).append(new_modal_input);
         $("#choice-distractor-" + pid + "-" + index).val(choice_data["distractor"]);
     }
     else {
@@ -90,6 +98,7 @@ function parsons_create_choice(pid, choice_data){
         $("#choices-" + pid).append(new_row);
     }
 
+    $("#choice-id-" + pid + "-" + index).val(index);
     if("content" in choice_data){
         const area = $("#choice-content-" + pid + '-' + index);
         area.val(choice_data["content"]);
@@ -103,10 +112,10 @@ function parsons_create_choice(pid, choice_data){
         $("#choice-fail-msg-" + pid + "-" + index).val(choice_data["fail_msg"]);
 
     // enable drag and drop for the new item if it is added manually and not a distractor
-    // when added manually, it has no given index
-    if (!("distractor" in choice_data) && !("index" in choice_data))
+    // when added manually, it has no given id
+    if (!("distractor" in choice_data) && !("id" in choice_data))
         dragAndDropDict[pid].addDraggable(index);
-    else if (!("index" in choice_data))
+    else if (!("id" in choice_data))
         dragAndDropDict[pid].addDistractor(index);
 }
 

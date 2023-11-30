@@ -188,7 +188,7 @@ ParsonsDragAndDrop.prototype.loadInput = function (input) {
     sortedItems.forEach((item) => {
         this.resultList.appendChild(item);
         let index = this.getIndex(item);
-        $("#choice-" + this.itemID + "-" + index).css("margin-left", this.itemsIndent[this.getIndex(item)] * 60 + "px");
+        $("#" + item.id).css("margin-left", this.itemsIndent[index] * 60 + "px");
     });
 };
 
