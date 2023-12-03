@@ -86,12 +86,14 @@ function parsons_create_choice(pid, choice_data){
             "<div class=\"form-group row\">\n" +
             "    <label for=\"choice-pair-PID-CHOICE\" class=\"col-sm-2 control-label\">Paired distractor</label>\n" +
             "    <div class=\"col-10\">\n" +
-            "        <input type=\"checkbox\" id=\"choice-fail-msg-PID-CHOICE\" name=\"problem[PID][choices][CHOICE][pair]\">\n" +
+            "        <input type=\"checkbox\" id=\"choice-pair-PID-CHOICE\" name=\"problem[PID][choices][CHOICE][pair]\">\n" +
             "    </div>\n" +
             "</div>"
         new_modal_input = new_modal_input.replace(/PID/g, pid).replace(/CHOICE/g, index);
         $("#modal-body-" + pid + "-" + index).append(new_modal_input);
         $("#choice-distractor-" + pid + "-" + index).val(choice_data["distractor"]);
+        if ("pair" in choice_data)
+            $("#choice-pair-" + pid + "-" + index).click();
     }
     else {
         new_row.attr('draggable', 'True');

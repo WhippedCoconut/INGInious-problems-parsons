@@ -4,11 +4,25 @@
 <div class="row justify-content-center">
     <h4 class="col-12" style="text-align: center">Drag items from here.</h4>
     <div id="distractors-{{inputId}}" class="parsons-distractors-{{ inputId }} col-12 pt-3 pb-3 bg-secondary border border-primary" style="min-height: 50px">
+        {# Choices #}
         {% for choice in choices %}
             <div id="choice-{{inputId}}-{{choice["id"]}}" style="border:2px solid" class="mt-1 mb-1 bg-white border border-primary" draggable="true">
                 <pre class="m-0">{{choice["content"]}}</pre>
             </div>
         {% endfor %}
+
+        {# Paired distractor #}
+        {% for pair in pairs %}
+            <div class="mt-1 mb-1 p-2  border border-primary">
+                <h6>Choose between</h6>
+                {% for item in pair %}
+                    <div id="choice-{{inputId}}-{{item["id"]}}" style="border:2px solid" class="mt-1 mb-1 bg-white border border-primary" draggable="true">
+                        <pre class="m-0">{{item["content"]}}</pre>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
     </div>
 </div>
 <div class="row mt-4 justify-content-center" style="min-height: 50px">

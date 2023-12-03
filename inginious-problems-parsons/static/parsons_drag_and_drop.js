@@ -128,7 +128,7 @@ ParsonsDragAndDrop.prototype.addDistractor = function (index) {
 };
 
 ParsonsDragAndDrop.prototype.updateIndent = function (offset) {
-    this.itemsIndent[this.draggingItemIndex] = Math.max(0, this.dragStartIndent + Math.round(offset / 50));
+    this.itemsIndent[this.draggingItemIndex] = Math.min(Math.max(0, this.dragStartIndent + Math.round(offset / 50)), 10);
     let item = $("#" + this.items[this.draggingItemIndex].id);
     item.css("margin-left", this.itemsIndent[this.draggingItemIndex] * 60 + "px");
 };

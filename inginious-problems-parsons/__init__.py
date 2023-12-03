@@ -2,6 +2,7 @@
 import json
 import os
 import sys
+import random
 
 from flask import send_from_directory
 
@@ -33,28 +34,46 @@ class ParsonsProblem(Problem):
         self._indication = content["indication"]
         self._indentation = True if "indentation" in content else False
         self._ranged_grading = True if "grading" in content else False
+        self._size = len(content["choices"]) if "choices" in content else None
 
         self._choices = []
         if "choices" not in content or not isinstance(content['choices'], (list, tuple)):
             raise Exception(problemid + " does not have choices or choices are not an array")
-        #  TODO: separate paired distractor from choices
-        for choice in content["choices"]:
-            data = {}
-            if 'content' not in choice:
-                raise Exception("A choice in " + problemid + " does not have content")
-            if "fail_msg" in choice:
-                data["fail_msg"] = choice["fail_msg"]
-            if "success_msg" in choice:
-                data["success_msg"] = choice["success_msg"]
-            data['content'] = choice['content']
-            data["id"] = choice["id"]
-            self._choices.append(data)
-        self._size = len(self._choices)
-        self.inputs_raw = content["inputs"]
+        pairs = {}
+        for i, choice in enumerate(content["choices"]):
+            if "pair" in choice:
+                data = self.__make_choice(problemid, choice)
+                if choice["distractor"] in pairs:
+                    pairs[choice["distractor"]].append(data)
+                else:
+                    pairs[choice["distractor"]] = [data]
 
+        for choice in content["choices"]:
+            data = self.__make_choice(problemid, choice)
+            if choice["id"] in pairs:
+                pairs[choice["id"]].append(data)
+            elif choice["id"] not in pairs and "distractor" not in choice:
+                self._choices.append(data)
+        random.shuffle(self._choices)
+        self._paired_choices = list(pairs.values())
+
+        #  problem inputs
+        self.inputs_raw = content["inputs"]
         inputs = json.loads(self.inputs_raw)
         self._inputs_lines = inputs["lines"]
         self._inputs_indent = inputs["indent"]
+
+    def __make_choice(self, problemid, choice):
+        data = {}
+        if 'content' not in choice:
+            raise Exception("A choice in " + problemid + " does not have content")
+        if "fail_msg" in choice:
+            data["fail_msg"] = choice["fail_msg"]
+        if "success_msg" in choice:
+            data["success_msg"] = choice["success_msg"]
+        data['content'] = choice['content']
+        data["id"] = choice["id"]
+        return data
 
     @classmethod
     def get_type(cls):
@@ -144,7 +163,7 @@ class DisplayableParsonsProblem(ParsonsProblem, DisplayableProblem):
                               translation=self.get_translation_obj(language))
         return template_helper.render("parsons.html", template_folder=PATH_TO_TEMPLATES,
                                       inputId=self.get_id(), header=header, choices=self._choices,
-                                      indentation=self._indentation)
+                                      pairs=self._paired_choices, indentation=self._indentation)
 
     @classmethod
     def show_editbox(cls, template_helper, key, language):
