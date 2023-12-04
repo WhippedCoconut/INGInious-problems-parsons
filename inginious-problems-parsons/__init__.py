@@ -52,7 +52,7 @@ class ParsonsProblem(Problem):
             data = self.__make_choice(problemid, choice)
             if choice["id"] in pairs:
                 pairs[choice["id"]].append(data)
-            elif choice["id"] not in pairs and "distractor" not in choice:
+            elif choice["id"] not in pairs and "pair" not in choice:
                 self._choices.append(data)
         random.shuffle(self._choices)
         self._paired_choices = list(pairs.values())
