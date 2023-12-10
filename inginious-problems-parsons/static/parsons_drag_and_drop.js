@@ -3,18 +3,13 @@ function ParsonsDragAndDrop(itemID, options) {
 
     this.resultList = document.querySelector(".parsons-result-" + itemID);
     this.distractorList = document.querySelector(".parsons-distractors-" + itemID);
-    if (options.edit) // distractors are not draggable in the edit page
-        this.lists = [this.resultList];
-    else
-        this.lists = [this.resultList, this.distractorList];
-
+    this.pairedList = document.querySelectorAll("[id^=paired-" + itemID + "]");
     // get all items sorted by id, sorted is important when reloading the page with distractors on the edit page
     this.items = $("[id^=choice-" + itemID + "]").toArray().sort(function (a, b) {
         return a.id.localeCompare(b.id);
     });
     this.itemsValues = new Array(this.items.length);
     this.itemsIndent = new Array(this.items.length).fill(0);
-
     this.enableIndentation = options.indent;
 
     this.items.forEach((item) => {
@@ -23,8 +18,12 @@ function ParsonsDragAndDrop(itemID, options) {
             this.dragStartX = elem.clientX;
             this.draggingItemIndex = this.getIndex(item);
             this.dragStartIndent = this.itemsIndent[this.draggingItemIndex];
+            // used to disable other paired items when inside the same pairing
+            this.dragStartPairs = null;
+            if ($(item).is("[class^=paired-" + itemID + "]") && $(item).parent().parent().is(this.distractorList))
+                this.dragStartPairs = [...document.querySelectorAll("." + item.parentElement.id + ":not(." + itemID + "dragging")];
 
-            if (!options.edit){
+            if (!options.edit) {
                 // reset all items border class to avoid keeping border color of previous feedback
                 this.items.forEach((i) => {
                     i.classList.remove("border-danger");
@@ -36,6 +35,10 @@ function ParsonsDragAndDrop(itemID, options) {
         });
 
         item.addEventListener("dragend", () => {
+            if (this.dragStartPairs !== null && $(item).parent().is(this.resultList))
+                $(this.dragStartPairs).attr("draggable", false).removeClass("bg-white").addClass("bg-gray");
+            else if ($(item).hasClass(item.parentElement.id))
+                $(item).parent().children().not("h6").attr("draggable", true).removeClass("bg-gray").addClass("bg-white");
             item.classList.remove(itemID + "dragging");
             this.updateValues();
             this.updateResult();
@@ -64,18 +67,56 @@ function ParsonsDragAndDrop(itemID, options) {
         this.updateResult()
     });
 
-    this.lists.forEach((list) => {
-        list.addEventListener("dragover", (elem) => {
+    if (!options.edit) {
+        this.distractorList.addEventListener("dragover", (elem) => {
             elem.preventDefault();
             let draggingItem = document.querySelector('.' + itemID + "dragging");
-            let otherItems = [...list.querySelectorAll("[id^=choice-" + itemID + "]:not(." + itemID + "dragging)")];
+            let otherItems = [...this.distractorList.querySelectorAll("[id^=choice-" + itemID + "]:not(." + itemID + "dragging):not([class^=paired-" + itemID + "])")];
             let nextItem = otherItems.find(item => {
                 let rect = item.getBoundingClientRect();
                 return elem.clientY <= rect.top + item.offsetHeight / 2;
             });
-            if (draggingItem !== null && nextItem)
+            if (draggingItem !== null && nextItem && !($(draggingItem).is("[class^=paired-]")))
+                this.distractorList.insertBefore(draggingItem, nextItem);
+            else if (draggingItem !== null && !($(draggingItem).is("[class^=paired-]")))
+                this.distractorList.appendChild(draggingItem);
+
+            if (this.enableIndentation)
+                this.updateIndent(elem.clientX - this.dragStartX, itemID);
+        });
+    }
+
+    this.resultList.addEventListener("dragover", (elem) => {
+        elem.preventDefault();
+        let draggingItem = document.querySelector('.' + itemID + "dragging");
+        let otherItems = [...this.resultList.querySelectorAll("[id^=choice-" + itemID + "]:not(." + itemID + "dragging)")];
+        let nextItem = otherItems.find(item => {
+            let rect = item.getBoundingClientRect();
+            return elem.clientY <= rect.top + item.offsetHeight / 2;
+        });
+        if (draggingItem !== null && nextItem)
+            this.resultList.insertBefore(draggingItem, nextItem);
+        else if (draggingItem !== null)
+            this.resultList.appendChild(draggingItem);
+
+        if (this.enableIndentation)
+            this.updateIndent(elem.clientX - this.dragStartX, itemID);
+    });
+
+    this.pairedList.forEach((list) => {
+        list.addEventListener("dragover", (elem) => {
+            elem.preventDefault();
+            let draggingItem = document.querySelector('.' + itemID + "dragging");
+            let nextItem = null
+            if (this.dragStartPairs) {
+                nextItem = this.dragStartPairs.find(item => {
+                    let rect = item.getBoundingClientRect();
+                    return elem.clientY <= rect.top + item.offsetHeight / 2;
+                });
+            }
+            if (draggingItem !== null && nextItem && $(draggingItem).hasClass(list.id))
                 list.insertBefore(draggingItem, nextItem);
-            else if (draggingItem !== null)
+            else if (draggingItem !== null && $(draggingItem).hasClass(list.id))
                 list.appendChild(draggingItem);
 
             if (this.enableIndentation)
