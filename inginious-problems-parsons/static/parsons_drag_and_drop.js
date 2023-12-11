@@ -3,10 +3,10 @@ function ParsonsDragAndDrop(itemID, options) {
 
     this.resultList = document.querySelector(".parsons-result-" + itemID);
     this.distractorList = document.querySelector(".parsons-distractors-" + itemID);
-    this.pairedList = document.querySelectorAll("[id^=paired-" + itemID + "]");
+    this.pairedList = [...document.querySelectorAll("[id^=paired-" + itemID + "]")];
     // get all items sorted by id, sorted is important when reloading the page with distractors on the edit page
     this.items = $("[id^=choice-" + itemID + "]").toArray().sort(function (a, b) {
-        return a.id.localeCompare(b.id);
+        return a.id.localeCompare(b.id, undefined, {numeric: true});
     });
     this.itemsValues = new Array(this.items.length);
     this.itemsIndent = new Array(this.items.length).fill(0);
@@ -212,7 +212,6 @@ ParsonsDragAndDrop.prototype.loadInput = function (input) {
 
     let sortedItems = new Array(this.items.length).fill(null);
     for (let i = 0; i < this.items.length; i++) {
-
         if (this.itemsValues[i] === -1) { // remove indentation of distractors
             this.itemsIndent[i] = 0;
             $("#choice-" + this.itemID + "-" + i).css("margin-left", "0px");
@@ -220,8 +219,16 @@ ParsonsDragAndDrop.prototype.loadInput = function (input) {
         } else {
             sortedItems.splice(this.itemsValues[i], 1, this.items[i]);
         }
-        // moves every item in the distractor list in order to reorder item in the result list
-        this.distractorList.appendChild(this.items[i]);
+
+        // moves every item in the distractor list to reorder items in the result list
+        if ($(this.items[i]).is("[class^=paired-]")) { // moving paired blocks
+            let list = this.pairedList.find(list => {
+                return $(this.items[i]).hasClass(list.id)
+            });
+            list.appendChild(this.items[i]);
+        }
+        else // not a paired block
+            this.distractorList.appendChild(this.items[i]);
     }
     this.updateResult();
 

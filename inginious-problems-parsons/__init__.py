@@ -40,16 +40,15 @@ class ParsonsProblem(Problem):
         if "choices" not in content or not isinstance(content['choices'], (list, tuple)):
             raise Exception(problemid + " does not have choices or choices are not an array")
         pairs = {}
-        for i, choice in enumerate(content["choices"]):
+        for choice in content["choices"]:
             if "pair" in choice:
-                data = self.__make_choice(problemid, choice)
+                data = self.__make_choice(choice)
                 if choice["distractor"] in pairs:
                     pairs[choice["distractor"]].append(data)
                 else:
                     pairs[choice["distractor"]] = [data]
-
         for choice in content["choices"]:
-            data = self.__make_choice(problemid, choice)
+            data = self.__make_choice(choice)
             if choice["id"] in pairs:
                 pairs[choice["id"]].append(data)
             elif choice["id"] not in pairs and "pair" not in choice:
@@ -63,10 +62,8 @@ class ParsonsProblem(Problem):
         self._inputs_lines = inputs["lines"]
         self._inputs_indent = inputs["indent"]
 
-    def __make_choice(self, problemid, choice):
+    def __make_choice(self, choice):
         data = {}
-        if 'content' not in choice:
-            raise Exception("A choice in " + problemid + " does not have content")
         if "fail_msg" in choice:
             data["fail_msg"] = choice["fail_msg"]
         if "success_msg" in choice:
@@ -92,10 +89,10 @@ class ParsonsProblem(Problem):
         else:
             answer = json.loads(task_input[self.get_id()])
 
-        if self._indentation:
-            checking = auto_check(answer, self._choices)
-            if checking:
-                return checking
+        # if self._indentation:
+        #     checking = auto_check(answer, self._choices)
+        #     if checking:
+        #         return checking
 
         invalid_count = 0
         block_msg = ""
@@ -105,15 +102,15 @@ class ParsonsProblem(Problem):
             if self._inputs_lines[i] != answer['lines'][i]:  # invalid placement
                 items_feedback[i] = 1
                 invalid_count += 1
-                if "fail_msg" in self._choices[i]:
-                    block_msg += ("\n  - " + self._choices[i]["fail_msg"])
+                # if "fail_msg" in self._choices[i]:
+                #     block_msg += ("\n  - " + self._choices[i]["fail_msg"])
             elif self._inputs_lines[i] != -1 and self._inputs_indent[i] != answer['indent'][i]:  # invalid indentation
                 items_feedback[i] = 2
                 invalid_count += 1
-                if "fail_msg" in self._choices[i]:
-                    block_msg += ("\n  - " + self._choices[i]["fail_msg"])
-            elif "success_msg" in self._choices[i]:
-                block_msg += ("\n  - " + self._choices[i]["success_msg"])
+                # if "fail_msg" in self._choices[i]:
+                #     block_msg += ("\n  - " + self._choices[i]["fail_msg"])
+            # elif "success_msg" in self._choices[i]:
+            #     block_msg += ("\n  - " + self._choices[i]["success_msg"])
         if invalid_count > 0:
             grade = ((self._size - invalid_count) / self._size) * 100
             msg = [self._indication, str(items_feedback), (self._fail_msg + block_msg),
@@ -145,7 +142,6 @@ class ParsonsProblem(Problem):
 
     @classmethod
     def get_text_fields(cls):
-        print("GET TEXT FIELD", sys.stdout)
         return Problem.get_text_fields()
 
 
