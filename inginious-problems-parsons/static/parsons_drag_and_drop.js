@@ -239,14 +239,3 @@ ParsonsDragAndDrop.prototype.loadInput = function (input) {
         $("#" + item.id).css("margin-left", this.itemsIndent[index] * 60 + "px");
     });
 };
-
-// From https://stackoverflow.com/questions/18809678/make-html5-draggable-items-scroll-the-page
-let scroll = function (step) {
-    let scrollY = $(window).scrollTop();
-    $(window).scrollTop(scrollY + step);
-    if (!stop) {
-        setTimeout(function () {
-            scroll(step)
-        }, 20);
-    }
-};
