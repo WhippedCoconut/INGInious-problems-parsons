@@ -39,38 +39,24 @@ class ParsonsProblem(Problem):
         self._choices = []
         if "choices" not in content or not isinstance(content['choices'], (list, tuple)):
             raise Exception(problemid + " does not have choices or choices are not an array")
-        pairs = {}
         for choice in content["choices"]:
+            data = {}
+            if "fail_msg" in choice:
+                data["fail_msg"] = choice["fail_msg"]
+            if "success_msg" in choice:
+                data["success_msg"] = choice["success_msg"]
             if "pair" in choice:
-                data = self.__make_choice(choice)
-                if choice["distractor"] in pairs:
-                    pairs[choice["distractor"]].append(data)
-                else:
-                    pairs[choice["distractor"]] = [data]
-        for choice in content["choices"]:
-            data = self.__make_choice(choice)
-            if choice["id"] in pairs:
-                pairs[choice["id"]].append(data)
-            elif choice["id"] not in pairs and "pair" not in choice:
-                self._choices.append(data)
-        random.shuffle(self._choices)
-        self._paired_choices = list(pairs.values())
+                data["pair"] = True
+                data["distractor"] = choice["distractor"]
+            data['content'] = choice['content']
+            data["id"] = choice["id"]
+            self._choices.append(data)
 
         #  problem inputs
         self.inputs_raw = content["inputs"]
         inputs = json.loads(self.inputs_raw)
         self._inputs_lines = inputs["lines"]
         self._inputs_indent = inputs["indent"]
-
-    def __make_choice(self, choice):
-        data = {}
-        if "fail_msg" in choice:
-            data["fail_msg"] = choice["fail_msg"]
-        if "success_msg" in choice:
-            data["success_msg"] = choice["success_msg"]
-        data['content'] = choice['content']
-        data["id"] = choice["id"]
-        return data
 
     @classmethod
     def get_type(cls):
@@ -81,6 +67,25 @@ class ParsonsProblem(Problem):
 
     def input_type(self):
         return str
+
+    def split_pairs(self):
+        choices = []
+        pairs = {}
+        for choice in self._choices:
+            print(choice, sys.stdout)
+            if "pair" in choice:
+                if choice["distractor"] in pairs:
+                    pairs[choice["distractor"]].append(choice)
+                else:
+                    pairs[choice["distractor"]] = [choice]
+        for choice in self._choices:
+            print(choice, sys.stdout)
+            if choice["id"] in pairs:
+                pairs[choice["id"]].append(choice)
+            elif choice["id"] not in pairs and "pair" not in choice:
+                choices.append(choice)
+        random.shuffle(choices)
+        return choices, list(pairs.values())
 
     def check_answer(self, task_input, language):
         # if submission is reloaded by course admin, answer input is a tuple, not a string anymore
@@ -102,15 +107,15 @@ class ParsonsProblem(Problem):
             if self._inputs_lines[i] != answer['lines'][i]:  # invalid placement
                 items_feedback[i] = 1
                 invalid_count += 1
-                # if "fail_msg" in self._choices[i]:
-                #     block_msg += ("\n  - " + self._choices[i]["fail_msg"])
+                if "fail_msg" in self._choices[i]:
+                    block_msg += ("\n  - " + self._choices[i]["fail_msg"])
             elif self._inputs_lines[i] != -1 and self._inputs_indent[i] != answer['indent'][i]:  # invalid indentation
                 items_feedback[i] = 2
                 invalid_count += 1
-                # if "fail_msg" in self._choices[i]:
-                #     block_msg += ("\n  - " + self._choices[i]["fail_msg"])
-            # elif "success_msg" in self._choices[i]:
-            #     block_msg += ("\n  - " + self._choices[i]["success_msg"])
+                if "fail_msg" in self._choices[i]:
+                    block_msg += ("\n  - " + self._choices[i]["fail_msg"])
+            elif "success_msg" in self._choices[i]:
+                block_msg += ("\n  - " + self._choices[i]["success_msg"])
         if invalid_count > 0:
             grade = ((self._size - invalid_count) / self._size) * 100
             msg = [self._indication, str(items_feedback), (self._fail_msg + block_msg),
@@ -157,9 +162,10 @@ class DisplayableParsonsProblem(ParsonsProblem, DisplayableProblem):
         """ Show ParsonsProblem """
         header = ParsableText(self.gettext(language, self._header), "rst",
                               translation=self.get_translation_obj(language))
+        choices, pairs = self.split_pairs()
         return template_helper.render("parsons.html", template_folder=PATH_TO_TEMPLATES,
-                                      inputId=self.get_id(), header=header, choices=self._choices,
-                                      pairs=self._paired_choices, indentation=self._indentation)
+                                      inputId=self.get_id(), header=header, choices=choices,
+                                      pairs=pairs, indentation=self._indentation)
 
     @classmethod
     def show_editbox(cls, template_helper, key, language):

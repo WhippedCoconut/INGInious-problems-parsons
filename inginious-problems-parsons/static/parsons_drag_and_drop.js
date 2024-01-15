@@ -81,7 +81,7 @@ function ParsonsDragAndDrop(itemID, options) {
             else if (draggingItem !== null && !($(draggingItem).is("[class^=paired-]")))
                 this.distractorList.appendChild(draggingItem);
 
-            if (this.enableIndentation)
+            if (this.enableIndentation && draggingItem !== null)
                 this.updateIndent(elem.clientX - this.dragStartX, itemID);
         });
     }
@@ -234,7 +234,12 @@ ParsonsDragAndDrop.prototype.loadInput = function (input) {
 
     //rearrange item from the result list and add the correct amount of indentation
     sortedItems.forEach((item) => {
+        let parent = item.parentElement; // the parent is needed for paired blocks
         this.resultList.appendChild(item);
+        if ($(item).is("[class^=paired-" + this.itemID + "]")){ // disable other paired blocks
+            let pairs = [...parent.querySelectorAll("." + parent.id)];
+            $(pairs).attr("draggable", false).removeClass("bg-white").addClass("bg-gray");
+        }
         let index = this.getIndex(item);
         $("#" + item.id).css("margin-left", this.itemsIndent[index] * 60 + "px");
     });
