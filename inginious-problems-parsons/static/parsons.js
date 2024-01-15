@@ -86,18 +86,20 @@ function parsons_create_choice(pid, choice_data){
             "<div class=\"form-group row\">\n" +
             "    <label for=\"choice-pair-PID-CHOICE\" class=\"col-sm-2 control-label\">Paired distractor</label>\n" +
             "    <div class=\"col-10\">\n" +
-            "        <input type=\"checkbox\" id=\"choice-pair-PID-CHOICE\" name=\"problem[PID][choices][CHOICE][pair]\">\n" +
+            "        <input type=\"checkbox\" id=\"choice-pair-PID-CHOICE\" name=\"problem[PID][choices][CHOICE][pair]\" onclick='$(\"#choice-info-PID-CHOICE\").toggleClass(\"bg-primary\").toggleClass(\"bg-success\");'>\n" +
             "    </div>\n" +
             "</div>"
         new_modal_input = new_modal_input.replace(/PID/g, pid).replace(/CHOICE/g, index);
         $("#modal-body-" + pid + "-" + index).append(new_modal_input);
         $("#choice-distractor-" + pid + "-" + index).val(choice_data["distractor"]);
+        $("#choice-info-" + pid + "-" + index).html("#" + ("00" + choice_data["distractor"]).slice(-2));
         if ("pair" in choice_data)
             $("#choice-pair-" + pid + "-" + index).click();
     }
     else {
         new_row.attr('draggable', 'True');
         $("#choices-" + pid).append(new_row);
+        $("#choice-info-" + pid + "-" + index).html("#" + ("00" + index).slice(-2));
     }
 
     $("#choice-id-" + pid + "-" + index).val(index);
@@ -167,13 +169,6 @@ function parsons_generate_from_file(pid) {
     input.click();
 }
 
-function parsons_toggle_choice(input_name) {
-    let checkbox = $("input[name='" + input_name + "']");
-    checkbox.click();
-    let btn = checkbox.next("button");
-    btn.toggleClass("btn-primary");
-    btn.toggleClass("btn-success");
-    let icon = btn.find("i");
-    icon.toggleClass("fa-times");
-    icon.toggleClass("fa-check");
+function parsons_toggle_pairing(pid, choice) {
+    $("#choice-info-" + pid + "-" + choice).toggleClass("bg-primary").toggleClass("bg-success");
 }
