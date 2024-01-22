@@ -44,24 +44,24 @@ function ParsonsDragAndDrop(itemID, options) {
             this.updateResult();
         });
 
-        let scrollTop = false;
-        let scrollBot = false;
-        item.addEventListener("drag", (elem) => {
-            scrollTop = elem.clientY < 150;
-            scrollBot = elem.clientY > (document.documentElement.clientHeight - 150);
-
-            if (scrollBot)
-                setTimeout(() => {
-                    let scrollY = $(window).scrollTop();
-                    $(window).scrollTop(scrollY + 3);
-                }, 20)
-
-            if (scrollTop)
-                setTimeout(() => {
-                    let scrollY = $(window).scrollTop();
-                    $(window).scrollTop(scrollY - 3);
-                }, 20);
-        });
+        // let scrollTop = false;
+        // let scrollBot = false;
+        // item.addEventListener("drag", (elem) => {
+        //     scrollTop = elem.clientY < 150;
+        //     scrollBot = elem.clientY > (document.documentElement.clientHeight - 150);
+        //
+        //     if (scrollBot)
+        //         setTimeout(() => {
+        //             let scrollY = $(window).scrollTop();
+        //             $(window).scrollTop(scrollY + 3);
+        //         }, 20)
+        //
+        //     if (scrollTop)
+        //         setTimeout(() => {
+        //             let scrollY = $(window).scrollTop();
+        //             $(window).scrollTop(scrollY - 3);
+        //         }, 20);
+        // });
 
         this.updateValues()
         this.updateResult()

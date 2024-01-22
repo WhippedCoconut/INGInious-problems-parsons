@@ -180,6 +180,7 @@ def init(plugin_manager, course_factory, client, plugin_config):
     plugin_manager.add_page('/plugins/parsons/static/<path:path>', StaticMockPage.as_view("parsonsproblemstaticpage"))
     plugin_manager.add_hook("javascript_footer", lambda: "/plugins/parsons/static/parsons.js")
     plugin_manager.add_hook("javascript_footer", lambda: "/plugins/parsons/static/parsons_drag_and_drop.js")
+    plugin_manager.add_hook("javascript_footer", lambda: "/plugins/parsons/static/lib/FileSaver/FileSaver.min.js")
     course_factory.get_task_factory().add_problem_type(DisplayableParsonsProblem)
 
 

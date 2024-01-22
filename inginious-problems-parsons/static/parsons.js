@@ -160,6 +160,8 @@ function parsons_generate_from_file(pid) {
         file.text().then((str) => {
             let itemsContent = str.split('\n');
             itemsContent.forEach((content) => {
+                if ($("#indentation-" + pid).is(":checked"))
+                    content = content.trimStart();
                 if (content !== "")
                     parsons_create_choice(pid, {"content": content});
             });
@@ -167,6 +169,64 @@ function parsons_generate_from_file(pid) {
         dragAndDropDict[pid].updateResult();
     };
     input.click();
+}
+
+function parsons_export_file(pid) {
+    let data = {};
+
+    let name = $("#name-" + pid);
+    if (name.val() !== "")
+        data.name = name.val();
+    let context = $("#header-" + pid);
+    if (context.val() !== "")
+        data.context = context.val();
+    let success_msg = $("#msg-success-" + pid);
+    if (success_msg.val() !== "")
+        data.success_msg = success_msg.val();
+    let fail_msg = $("#msg-fail-" + pid);
+    if (fail_msg.val() !== "")
+        data.fail_msg = fail_msg.val();
+    data.indication = $("#indication-" + pid).val();
+    if ($("#indentation-ParsonsTesting").is(".checked"))
+        data.indentation = true;
+    if ($("#grading-ParsonsTesting").is(".checked"))
+        data.grading = true;
+
+    data.choices = [];
+    dragAndDropDict[pid].items.forEach((item) => {
+        let id = item.id.split('-')[2];
+        let index = dragAndDropDict[pid].getIndex(item);
+        let choice = {id : id};
+
+        let content = $("#choice-content-" + pid + "-" + id);
+        if (content.val() !== "")
+            choice.content = content.val();
+        let success_msg = $("#choice-success-msg-" + pid + "-" + id);
+        if (success_msg.val() !== "")
+            choice.success_msg = success_msg.val();
+        let fail_msg = $("#choice-fail-msg-" + pid + "-" + id);
+        if (fail_msg.val() !== "")
+            choice.fail_msg = fail_msg.val();
+        let distractor = $("#choice-distractor-" + pid + "-" + id);
+        if (distractor.val() !== ""){
+            choice.distractor = distractor.val();
+            if ($("#choice-pair-" + pid + "-" + id).is(":checked"))
+                choice.pair = true;
+        }
+        else {
+            choice.line = dragAndDropDict[pid].itemsValues[index];
+            choice.indent = dragAndDropDict[pid].itemsIndent[index];
+        }
+
+        data.choices.push(choice);
+    });
+
+    // convert data into a human-readable json
+    let json = JSON.stringify(data, null, 2);
+    const file = new File(["\ufeff" + json], pid + ".json", {type: "text/plain:charset=UTF-8"});
+
+    // function from /lib/FileSaver/FileSave.min.js
+    saveAs(file, pid + ".json");
 }
 
 function parsons_toggle_pairing(pid, choice) {
