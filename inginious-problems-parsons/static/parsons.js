@@ -117,9 +117,9 @@ function parsons_create_choice(pid, choice_data){
 
     // enable drag and drop for the new item if it is added manually and not a distractor
     // when added manually, it has no given id
-    if (!("distractor" in choice_data) && !("id" in choice_data))
+    if ("newChoice" in choice_data)
         dragAndDropDict[pid].addDraggable(index);
-    else if (!("id" in choice_data))
+    if ("newDistractor" in choice_data)
         dragAndDropDict[pid].addDistractor(index);
 }
 
@@ -129,6 +129,7 @@ function parsons_delete_choice(pid, choice) {
 
 function parsons_create_distractor(pid, id){
     const choice_data = {
+        "newDistractor": true,
         "distractor": id,
         "content": $("#choice-content-" + pid + "-" + id).val()
     }
@@ -136,7 +137,7 @@ function parsons_create_distractor(pid, id){
 }
 
 function parsons_toggle_indentation(pid) {
-    // letiable may not be ready
+    // variable may not be ready
     if(typeof dragAndDropDict[pid] !== "undefined")
         dragAndDropDict[pid].toggleIndentation();
     else // retry in a moment
@@ -157,16 +158,62 @@ function parsons_generate_from_file(pid) {
     input.type = 'file';
     input.onchange = () => {
         let file = input.files[0];
+        let fileExtension = file.name.split('.').pop();
         file.text().then((str) => {
-            let itemsContent = str.split('\n');
-            itemsContent.forEach((content) => {
-                if ($("#indentation-" + pid).is(":checked"))
-                    content = content.trimStart();
-                if (content !== "")
-                    parsons_create_choice(pid, {"content": content});
-            });
+            if (fileExtension === "json") {
+                let data = JSON.parse(str);
+                if ("name" in data)
+                    $("#name-" + pid).val(data.name);
+                if ("context" in data)
+                    codeEditors["problem[" + pid + "][header]"].setValue(data.context);
+                if ("success_msg" in data)
+                    codeEditors["problem[" + pid + "][success_msg]"].setValue(data.success_msg);
+                if ("fail_msg" in data)
+                    codeEditors["problem[" + pid + "][fail_msg]"].setValue(data.fail_msg);
+                if ("indication" in data)
+                    $("#indication-" + pid).val(data.indication);
+                if ("grading" in data)
+                    $("#grading-" + pid).click();
+                if ("indentation" in data)
+                    $("#indentation-" + pid).click();
+                if ("choices" in data){
+                    let eachChoiceHasID = true;
+                    let idSet = new Set()
+                    data.choices.forEach((choice) => {
+                        if ("id" in choice){
+                            if (idSet.has(choice.id)){
+                                alert("The file could not be loaded due to multiple items sharing the same IDs.");
+                                location.reload();
+                                return;
+                            }
+                            idSet.add(choice.id);
+                        }
+                        else
+                            eachChoiceHasID = false;
+                        if ("distractor" in choice)
+                            choice.newDistractor = true;
+                        else
+                            choice.newChoice = true;
+                        parsons_create_choice(pid, choice);
+                    });
+                    if ("input" in data && eachChoiceHasID)
+                        dragAndDropDict[pid].loadInput(JSON.stringify(data.input));
+                    else if  ("input" in data)
+                        alert("The input couldn't be loaded due to the absence of an ID for one or more items.");
+                }
+            }
+            else {
+                let itemsContent = str.split('\n');
+                itemsContent.forEach((content) => {
+                    if ($("#indentation-" + pid).is(":checked"))
+                        // removes spaces at the beginning in case the file contains an indented code
+                        content = content.trimStart();
+                    if (content !== "")
+                        parsons_create_choice(pid, {"newChoice": true, "content": content});
+                });
+            }
+            dragAndDropDict[pid].updateResult();
         });
-        dragAndDropDict[pid].updateResult();
     };
     input.click();
 }
@@ -195,7 +242,6 @@ function parsons_export_file(pid) {
     data.choices = [];
     dragAndDropDict[pid].items.forEach((item) => {
         let id = item.id.split('-')[2];
-        let index = dragAndDropDict[pid].getIndex(item);
         let choice = {id : id};
 
         let content = $("#choice-content-" + pid + "-" + id);
@@ -213,16 +259,12 @@ function parsons_export_file(pid) {
             if ($("#choice-pair-" + pid + "-" + id).is(":checked"))
                 choice.pair = true;
         }
-        else {
-            choice.line = dragAndDropDict[pid].itemsValues[index];
-            choice.indent = dragAndDropDict[pid].itemsIndent[index];
-        }
-
         data.choices.push(choice);
     });
+    data.input = JSON.parse($("#inputs-" + pid).val());
 
     // convert data into a human-readable json
-    let json = JSON.stringify(data, null, 2);
+    let json = JSON.stringify(data, null, 4);
     const file = new File(["\ufeff" + json], pid + ".json", {type: "text/plain:charset=UTF-8"});
 
     // function from /lib/FileSaver/FileSave.min.js
