@@ -9,6 +9,7 @@ function ParsonsDragAndDrop(itemID, options) {
         return a.id.localeCompare(b.id, undefined, {numeric: true});
     });
     this.itemsValues = new Array(this.items.length);
+    this.itemsSequence = [];
     this.itemsIndent = new Array(this.items.length).fill(0);
     this.enableIndentation = options.indent;
 
@@ -177,14 +178,17 @@ ParsonsDragAndDrop.prototype.updateIndent = function (offset) {
 ParsonsDragAndDrop.prototype.updateValues = function () {
     const itemsInResult = [...this.resultList.querySelectorAll("[id^=choice-" + this.itemID + "]")];
     this.itemsValues = new Array(this.itemsValues.length).fill(-1);
+    this.itemsSequence = [];
     for (let i = 0; i < itemsInResult.length; i++) {
         let index = this.getIndex(itemsInResult[i]);
         this.itemsValues[index] = i;
+        this.itemsSequence.push(index);
     }
 };
 
 ParsonsDragAndDrop.prototype.updateResult = function () {
     let result = {
+        sequence: this.itemsSequence,
         lines: this.itemsValues,
         indent: this.itemsIndent
     };
