@@ -34,17 +34,15 @@ function load_input_parsons(submissionid, key, input) {
 function load_feedback_parsons(key, content) {
     let parsing = parsons_parse_feedback_content(content[1]);
     load_feedback_code(key, [content[0], parsing.feedback]);
-    for (let index = 0; index < parsing.table.length; index++) {
-        let item = $("#choice-" + key + "-" + index);
+    let itemsInResult = $("#result-" + key).children();
+    jQuery.each(itemsInResult, (index, item) => {
         // reset previous feedback if any
-        item.removeClass("border-danger").removeClass("border-success").addClass("border border-primary");
-        if (parsing.indication === '1' && item.parent().attr('id') === ("result-" + key)){
-            if (parsing.table[index] !== "0")
-                item.removeClass("border border-primary").addClass("border-danger");
-            else
-                item.removeClass("border border-primary").addClass("border-success");
-        }
-    }
+        $(item).removeClass("border-danger").removeClass("border-success").addClass("border border-primary");
+        if (parsing.indication === '1' && parsing.table[index] > 0)
+            $(item).removeClass("border border-primary").addClass("border-danger");
+        else
+            $(item).removeClass("border border-primary").addClass("border-success");
+    });
 }
 
 /**

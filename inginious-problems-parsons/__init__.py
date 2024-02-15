@@ -57,6 +57,7 @@ class ParsonsProblem(Problem):
         inputs = json.loads(self.inputs_raw)
         self._inputs_lines = inputs["lines"]
         self._inputs_indent = inputs["indent"]
+        self._inputs_sequence = inputs["sequence"]
 
     @classmethod
     def get_type(cls):
@@ -72,20 +73,40 @@ class ParsonsProblem(Problem):
         choices = []
         pairs = {}
         for choice in self._choices:
-            print(choice, sys.stdout)
             if "pair" in choice:
                 if choice["distractor"] in pairs:
                     pairs[choice["distractor"]].append(choice)
                 else:
                     pairs[choice["distractor"]] = [choice]
         for choice in self._choices:
-            print(choice, sys.stdout)
             if choice["id"] in pairs:
                 pairs[choice["id"]].append(choice)
             elif choice["id"] not in pairs and "pair" not in choice:
                 choices.append(choice)
         random.shuffle(choices)
         return choices, list(pairs.values())
+
+    def LIS(self, answer):
+        all_subsequence = []
+        # Find all subsequence
+        for i in range(len(answer)):
+            current_subsequence = [answer[i]]
+            current_index = self._inputs_sequence.index(answer[i]) if answer[i] in self._inputs_sequence else float('inf')
+            index_from_last_element_added = -1
+            for j in range(i, len(answer)):
+                subsequent = self._inputs_sequence.index(answer[j]) if answer[j] in self._inputs_sequence else -1
+                if (subsequent > current_index) and (index_from_last_element_added < subsequent):
+                    current_subsequence.append(answer[j])
+                    index_from_last_element_added = subsequent
+            all_subsequence.append(current_subsequence)
+        # Find the longest one
+        longest_len = -1
+        longest_sequence = None
+        for sequence in all_subsequence:
+            if len(sequence) > longest_len:
+                longest_sequence = sequence
+                longest_len = len(sequence)
+        return longest_sequence
 
     def check_answer(self, task_input, language):
         # if submission is reloaded by course admin, answer input is a tuple, not a string anymore
@@ -94,36 +115,36 @@ class ParsonsProblem(Problem):
         else:
             answer = json.loads(task_input[self.get_id()])
 
-        # if self._indentation:
-        #     checking = auto_check(answer, self._choices)
-        #     if checking:
-        #         return checking
-
-        invalid_count = 0
+        solution_size = len(answer["sequence"])
         block_msg = ""
-        # one value for each item, {0: ok, 1: wrong placement, 2: wrong indent}
-        items_feedback = [0 for _ in range(self._size)]
-        for i in range(self._size):
-            if self._inputs_lines[i] != answer['lines'][i]:  # invalid placement
+        invalid_count = len(self._inputs_sequence)
+        LIS_result = self.LIS(answer["sequence"])
+        # one value for each item placed inside the solution, {0: ok, 1: wrong placement, 2: wrong indent}
+        if len(LIS_result) > 1:
+            items_feedback = [0 for _ in range(solution_size)]
+        else:  # longest sequence of one means all items are misplaced
+            items_feedback = [1 for _ in range(solution_size)]
+
+        for i in range(len(answer["sequence"])):
+            if answer["sequence"][i] not in LIS_result:  # placement check
                 items_feedback[i] = 1
-                invalid_count += 1
-                if "fail_msg" in self._choices[i]:
-                    block_msg += ("\n  - " + self._choices[i]["fail_msg"])
-            elif self._inputs_lines[i] != -1 and self._inputs_indent[i] != answer['indent'][i]:  # invalid indentation
+            elif self._inputs_indent[answer["sequence"][i]] != answer['indent'][answer["sequence"][i]]:  # indentation check
                 items_feedback[i] = 2
-                invalid_count += 1
-                if "fail_msg" in self._choices[i]:
-                    block_msg += ("\n  - " + self._choices[i]["fail_msg"])
-            elif "success_msg" in self._choices[i]:
-                block_msg += ("\n  - " + self._choices[i]["success_msg"])
-        if invalid_count > 0:
-            grade = ((self._size - invalid_count) / self._size) * 100
-            msg = [self._indication, str(items_feedback), (self._fail_msg + block_msg),
-                   ("Grade: %.2f%%" % grade if self._ranged_grading else "")]
-            return False, None, msg, 0, ""
-        else:
+            elif len(LIS_result) > 1:
+                invalid_count -= 1
+
+            if (items_feedback[i] > 0) and ("fail_msg" in self._choices[answer["sequence"][i]]):
+                block_msg += ("\n  - (-) " + self._choices[answer["sequence"][i]]["fail_msg"])
+            elif (items_feedback[i] == 0) and ("success_msg" in self._choices[answer["sequence"][i]]):
+                block_msg += ("\n  - (+) " + self._choices[answer["sequence"][i]]["success_msg"])
+
+        if invalid_count == 0:
             msg = [self._indication, str(items_feedback), (self._success_msg + block_msg)]
             return True, None, msg, 0, ""
+        grade = ((solution_size - invalid_count) / solution_size) * 100
+        msg = [self._indication, str(items_feedback), (self._fail_msg + block_msg),
+               ("Grade: %.2f%%" % grade if self._ranged_grading else "")]
+        return False, None, msg, 0, ""
 
     @classmethod
     def parse_problem(self, problem_content):
