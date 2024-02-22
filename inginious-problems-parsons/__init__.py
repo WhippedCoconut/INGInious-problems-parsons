@@ -57,7 +57,13 @@ class ParsonsProblem(Problem):
         inputs = json.loads(self.inputs_raw)
         self._inputs_lines = inputs["lines"]
         self._inputs_indent = inputs["indent"]
-        self._inputs_sequence = inputs["sequence"]
+        # convert the lines into a sequence for the grading
+        self._inputs_sequence = [-1 for _ in range(self._size)]
+        for i in range(self._size):
+            if self._inputs_lines[i] == -1:
+                del self._inputs_sequence[-1]
+            else:
+                self._inputs_sequence[self._inputs_lines[i]] = i
 
     @classmethod
     def get_type(cls):
@@ -115,33 +121,54 @@ class ParsonsProblem(Problem):
         else:
             answer = json.loads(task_input[self.get_id()])
 
+        answer["sequence"] = [-1 for _ in range(self._size)]
+        for i in range(self._size):
+            if answer["lines"][i] == -1:
+                del answer["sequence"][-1]
+            else:
+                answer["sequence"][answer["lines"][i]] = i
+
         solution_size = len(answer["sequence"])
         block_msg = ""
         invalid_count = len(self._inputs_sequence)
         LIS_result = self.LIS(answer["sequence"])
         # one value for each item placed inside the solution, {0: ok, 1: wrong placement, 2: wrong indent}
-        if len(LIS_result) > 1:
-            items_feedback = [0 for _ in range(solution_size)]
-        else:  # longest sequence of one means all items are misplaced
-            items_feedback = [1 for _ in range(solution_size)]
+        items_feedback = [-1 for _ in range(solution_size)]
+
+        if solution_size < len(self._inputs_sequence):
+            block_msg += "\n  - (-) Solution is too short"
+        if solution_size > len(self._inputs_sequence):
+            block_msg += "\n  - (-) Solution is too long"
 
         for i in range(len(answer["sequence"])):
-            if answer["sequence"][i] not in LIS_result:  # placement check
-                items_feedback[i] = 1
-            elif self._inputs_indent[answer["sequence"][i]] != answer['indent'][answer["sequence"][i]]:  # indentation check
+            line_index = answer["sequence"][i]
+            items_feedback[i] = 4
+            if int(self._indication) > 1 and self._inputs_lines[line_index] == answer["lines"][line_index]:  # Check exact placement
+                items_feedback[i] = 0
+            elif len(LIS_result) > 1 and answer["sequence"][i] in LIS_result:  # Check LIS validation
                 items_feedback[i] = 2
-            elif len(LIS_result) > 1:
+
+            # Check indent, incorrect indentation is indicated by any feedback values that are odd
+            if self._inputs_indent[answer["sequence"][i]] != answer['indent'][answer["sequence"][i]]:
+                items_feedback[i] += 1
+
+            if items_feedback[i] == 0 or (items_feedback[i] == 2 and int(self._indication) == 1):
                 invalid_count -= 1
 
             if (items_feedback[i] > 0) and ("fail_msg" in self._choices[answer["sequence"][i]]):
                 block_msg += ("\n  - (-) " + self._choices[answer["sequence"][i]]["fail_msg"])
-            elif (items_feedback[i] == 0) and ("success_msg" in self._choices[answer["sequence"][i]]):
+            if (items_feedback[i] == 0) and ("success_msg" in self._choices[answer["sequence"][i]]):
                 block_msg += ("\n  - (+) " + self._choices[answer["sequence"][i]]["success_msg"])
 
-        if invalid_count == 0:
+        #  retrieve the success message for unused distractors, which is the correct solution.
+        for i in range(len(self._inputs_lines)):
+            if self._inputs_lines[i] == -1 and answer["lines"][i] == -1 and "success_msg" in self._choices[i]:
+                block_msg += ("\n  - (+) " + self._choices[i]["success_msg"])
+
+        if invalid_count == 0 and solution_size == len(self._inputs_sequence):
             msg = [self._indication, str(items_feedback), (self._success_msg + block_msg)]
             return True, None, msg, 0, ""
-        grade = ((solution_size - invalid_count) / solution_size) * 100
+        grade = ((len(self._inputs_sequence) - invalid_count) / (len(self._inputs_sequence)) * 100)
         msg = [self._indication, str(items_feedback), (self._fail_msg + block_msg),
                ("Grade: %.2f%%" % grade if self._ranged_grading else "")]
         return False, None, msg, 0, ""

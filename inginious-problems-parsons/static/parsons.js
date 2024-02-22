@@ -37,11 +37,27 @@ function load_feedback_parsons(key, content) {
     let itemsInResult = $("#result-" + key).children();
     jQuery.each(itemsInResult, (index, item) => {
         // reset previous feedback if any
-        $(item).removeClass("border-danger").removeClass("border-success").addClass("border border-primary");
-        if (parsing.indication === '1' && parsing.table[index] > 0)
-            $(item).removeClass("border border-primary").addClass("border-danger");
-        else
-            $(item).removeClass("border border-primary").addClass("border-success");
+        $(item).removeClass("border-danger")
+            .removeClass("border-success")
+            .removeClass("border-warning")
+            .addClass("border border-primary");
+        $(item).find(".indent-feedback").removeClass("indent-feedback").addClass("invisible");
+        if (parsing.indication === 1){
+            if (parsing.table[index] > 3)
+                $(item).removeClass("border border-primary").addClass("border-danger");
+            else
+                $(item).removeClass("border border-primary").addClass("border-success");
+        }
+        else if (parsing.indication === 2){
+            if (parsing.table[index] === 2 || parsing.table[index] === 3)
+                $(item).removeClass("border border-primary").addClass("border-warning");
+            else if (parsing.table[index] === 4 || parsing.table[index] === 5)
+                $(item).removeClass("border border-primary").addClass("border-danger");
+            else
+                $(item).removeClass("border border-primary").addClass("border-success");
+            if ((parsing.table[index] % 2) > 0)
+                $(item).find(".invisible").removeClass("invisible").addClass("indent-feedback")
+        }
     });
 }
 
@@ -57,8 +73,10 @@ function load_feedback_parsons(key, content) {
  */
 function parsons_parse_feedback_content(content){
     let result = {};
-    result.indication = content[3];
-    result.table = content.substring(13, content.indexOf("]")).split(", ");
+    result.indication = parseInt(content[3]);
+    result.table = content.substring(13, content.indexOf("]")).split(", ").map((elem) => {
+        return parseInt(elem);
+    });
     result.feedback = content.substring(content.indexOf("]")+6);
     return result;
 }

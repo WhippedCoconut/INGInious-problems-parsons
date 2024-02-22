@@ -7,11 +7,16 @@
         {# Paired distractor #}
         {% for pair in pairs %}
             {% set loopindex = loop.index0 %}
-            <div id="paired-{{inputId}}-{{loopindex}}" class="mt-1 mb-1 p-2  border border-primary">
+            <div id="paired-{{inputId}}-{{loopindex}}" class="mt-1 mb-1 p-2 border border-primary">
                 <h6>Choose between</h6>
                 {% for item in pair %}
                     <div id="choice-{{inputId}}-{{item["id"]}}" style="border:2px solid" class="paired-{{inputId}}-{{loopindex}} mt-1 mb-1 bg-white border border-primary" draggable="true">
-                        <pre class="m-0">{{item["content"]}}</pre>
+                        <div class="row">
+                            <pre class="col m-0 ml-2 border-0">{{item["content"]}}</pre>
+                            <span class="badge-pill badge-danger h-50 pl-2 pr-2 mt-2 mr-4 invisible">
+                                <i class="fa fa-arrows-h text-white"></i>
+                            </span>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
@@ -19,8 +24,13 @@
 
         {# Choices #}
         {% for choice in choices %}
-            <div id="choice-{{inputId}}-{{choice["id"]}}" style="border:2px solid" class="mt-1 mb-1 bg-white border border-primary" draggable="true">
-                <pre class="m-0">{{choice["content"]}}</pre>
+            <div id="choice-{{inputId}}-{{choice["id"]}}" style="border:2px solid" class="mt-1 mb-1 pl-1 bg-white border border-primary" draggable="true">
+                <div class="row">
+                    <pre class="col m-0 ml-1 border-0">{{choice["content"]}}</pre>
+                    <span class="badge-pill badge-danger h-50 pl-2 pr-2 mt-2 mr-4 invisible">
+                        <i class="fa fa-arrows-h text-white"></i>
+                    </span>
+                </div>
             </div>
         {% endfor %}
     </div>
