@@ -250,9 +250,9 @@ function parsons_export_file(pid) {
     if (fail_msg.val() !== "")
         data.fail_msg = fail_msg.val();
     data.indication = $("#indication-" + pid).val();
-    if ($("#indentation-ParsonsTesting").is(":checked"))
+    if ($("#indentation-" + pid).is(":checked"))
         data.indentation = true;
-    if ($("#grading-ParsonsTesting").is(":checked"))
+    if ($("#grading-" + pid).is(":checked"))
         data.grading = true;
 
     data.choices = [];

@@ -149,7 +149,7 @@ class ParsonsProblem(Problem):
                 items_feedback[i] = 2
 
             # Check indent, incorrect indentation is indicated by any feedback values that are odd
-            if self._inputs_indent[answer["sequence"][i]] != answer['indent'][answer["sequence"][i]]:
+            if self._inputs_indent[answer["sequence"][i]] != answer['indent'][answer["sequence"][i]] and self._inputs_lines[answer["sequence"][i]] != -1:
                 items_feedback[i] += 1
 
             if items_feedback[i] == 0 or (items_feedback[i] == 2 and int(self._indication) == 1):
