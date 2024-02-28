@@ -152,7 +152,7 @@ class ParsonsProblem(Problem):
             if self._inputs_indent[answer["sequence"][i]] != answer['indent'][answer["sequence"][i]] and self._inputs_lines[answer["sequence"][i]] != -1:
                 items_feedback[i] += 1
 
-            if items_feedback[i] == 0 or (items_feedback[i] == 2 and int(self._indication) == 1):
+            if items_feedback[i] == 0 or (items_feedback[i] == 2 and int(self._indication) < 2):
                 invalid_count -= 1
 
             if (items_feedback[i] > 0) and ("fail_msg" in self._choices[answer["sequence"][i]]):
