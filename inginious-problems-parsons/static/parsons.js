@@ -43,7 +43,7 @@ function load_feedback_parsons(key, content) {
             .addClass("border border-primary");
         $(item).find(".indent-feedback").removeClass("indent-feedback").addClass("invisible");
         if (parsing.indication === 1){
-            if (parsing.table[index] > 3)
+            if (parsing.table[index] > 2)
                 $(item).removeClass("border border-primary").addClass("border-danger");
             else
                 $(item).removeClass("border border-primary").addClass("border-success");
