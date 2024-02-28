@@ -145,7 +145,7 @@ class ParsonsProblem(Problem):
             items_feedback[i] = 4
             if int(self._indication) > 1 and self._inputs_lines[line_index] == answer["lines"][line_index]:  # Check exact placement
                 items_feedback[i] = 0
-            elif len(LIS_result) > 1 and answer["sequence"][i] in LIS_result:  # Check LIS validation
+            elif (int(self._indication) == 1 or len(LIS_result) > 1) and answer["sequence"][i] in LIS_result:  # Check LIS validation
                 items_feedback[i] = 2
 
             # Check indent, incorrect indentation is indicated by any feedback values that are odd
