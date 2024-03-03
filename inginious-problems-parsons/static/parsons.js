@@ -35,7 +35,6 @@ function load_feedback_parsons(key, content) {
     let parsing = parsons_parse_feedback_content(content[1]);
     load_feedback_code(key, [content[0], parsing.feedback]);
     let itemsInResult = $("#result-" + key).children();
-    console.log(parsing.table);
     jQuery.each(itemsInResult, (index, item) => {
         // reset previous feedback if any
         $(item).removeClass("border-danger")

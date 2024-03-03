@@ -148,7 +148,7 @@ class ParsonsProblem(Problem):
             elif len(LIS_result) > 1 and answer["sequence"][i] in LIS_result:  # Check LIS validation
                 items_feedback[i] = 2
             elif len(self._inputs_sequence) == 1 and self._inputs_lines[line_index] == answer["lines"][line_index]:  # One block solution case
-                items_feedback[i] = 0
+                items_feedback[i] = 2
 
             # Check indent, incorrect indentation is indicated by any feedback values that are odd
             if self._inputs_indent[answer["sequence"][i]] != answer['indent'][answer["sequence"][i]] and self._inputs_lines[answer["sequence"][i]] != -1:
@@ -157,7 +157,7 @@ class ParsonsProblem(Problem):
             if items_feedback[i] == 0 or (items_feedback[i] == 2 and int(self._indication) < 2):
                 invalid_count -= 1
 
-            if (items_feedback[i] > 0) and ("fail_msg" in self._choices[answer["sequence"][i]]):
+            if ((int(self._indication) == 2 and items_feedback[i] > 0) or (int(self._indication) < 2 and items_feedback[i] != 2)) and ("fail_msg" in self._choices[answer["sequence"][i]]):
                 block_msg += ("\n  - (-) " + self._choices[answer["sequence"][i]]["fail_msg"])
             if (items_feedback[i] == 0) and ("success_msg" in self._choices[answer["sequence"][i]]):
                 block_msg += ("\n  - (+) " + self._choices[answer["sequence"][i]]["success_msg"])
