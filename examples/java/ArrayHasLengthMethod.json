@@ -1,0 +1,67 @@
+﻿{
+    "context": "Rearrange the code blocks to print each element of the Array ``table``.\n\nMisconception:\n  - ArrayHasLengthMethod: Arrays have a length methods, not a length field.",
+    "indication": "1",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "System.out.println(table[i]);"
+        },
+        {
+            "id": "1",
+            "content": "}"
+        },
+        {
+            "id": "2",
+            "content": "for(int i = 0; i < n; i++){"
+        },
+        {
+            "id": "3",
+            "content": "int n = table.length;"
+        },
+        {
+            "id": "4",
+            "content": "int n = table.length();",
+            "fail_msg": "Arrays have no method \"length\".",
+            "distractor": "3"
+        },
+        {
+            "id": "5",
+            "content": "int n = table.size();",
+            "fail_msg": "Arrays have no method \"size\".",
+            "distractor": "3"
+        },
+        {
+            "id": "6",
+            "content": "while(i < n){",
+            "fail_msg": "The variable i is never updated.",
+            "distractor": "0"
+        },
+        {
+            "id": "7",
+            "content": "int[] table = {17, 42, 8, -3, 99};"
+        }
+    ],
+    "input": {
+        "lines": [
+            3,
+            4,
+            2,
+            1,
+            -1,
+            -1,
+            -1,
+            0
+        ],
+        "indent": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
+    }
+}

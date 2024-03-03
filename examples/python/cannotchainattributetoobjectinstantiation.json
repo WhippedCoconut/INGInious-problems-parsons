@@ -1,0 +1,49 @@
+﻿{
+    "name": "Find coordinates of vector origin",
+    "context": "Rearrange the code blocks to print the x-coordinate of the origin of the vector ``v``.\nVectors are objects that are initialized with a Point as origin, along with x and y deltas.\n``new_vector = Vector(Point(x, y), delta_X, delta_Y)``\n``v = Vector(Point(1,4), 5, 7)``\n\nMisconception:\n    - ObjectsMustBeNamed: Novices thinks object always needs to be named.\n    - CannotChainAttributeToObjectInstantiation: Novices thinks that methods calls and attribute acces cannot be chained.\n    - RightToLeftChaining: Novices thinks that accesses are invoked from left to right.",
+    "indication": "1",
+    "choices": [
+        {
+            "id": "0",
+            "content": "print(f\"X coordinate: {x}\")"
+        },
+        {
+            "id": "1",
+            "content": "x = v.origin().x"
+        },
+        {
+            "id": "2",
+            "content": "origin_point = v.origin()",
+            "fail_msg": "There exists a better way to get the origin",
+            "distractor": "1"
+        },
+        {
+            "id": "3",
+            "content": "x = origin_point.x",
+            "fail_msg": "A better method could be used to obtain the value of x.",
+            "distractor": "1"
+        },
+        {
+            "id": "4",
+            "content": "x = x.origin().v",
+            "fail_msg": "x has no attribute called \"origin\"",
+            "distractor": "1"
+        }
+    ],
+    "input": {
+        "lines": [
+            1,
+            0,
+            -1,
+            -1,
+            -1
+        ],
+        "indent": [
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
+    }
+}

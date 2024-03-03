@@ -1,0 +1,32 @@
+﻿{
+    "context": "Rearrange the code blocks to print \"42\".\n\nMisconception:\n  - ParenthesesOnlyIfArgument:  Parentheses are optional for function calls without arguments.\n\n",
+    "indication": "1",
+    "choices": [
+        {
+            "id": "0",
+            "content": "print( f() )"
+        },
+        {
+            "id": "1",
+            "content": "def f():\n   return 42"
+        },
+        {
+            "id": "2",
+            "content": "print(f)",
+            "fail_msg": "\"The requested outcome will not be printed when using the print(f) statement; instead, what will be printed is the memory address where the function is stored.",
+            "distractor": "0"
+        }
+    ],
+    "input": {
+        "lines": [
+            1,
+            0,
+            -1
+        ],
+        "indent": [
+            0,
+            0,
+            0
+        ]
+    }
+}

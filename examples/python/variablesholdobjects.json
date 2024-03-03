@@ -1,0 +1,64 @@
+﻿{
+    "context": "Rearrange the code blocks to first print the breed of the second dog, then print the name of the first dog. The ``Dog`` class have two attributes: ``name`` and ``breed``.\n\nMisconception:\n  - VariablesHoldObjects: A variable contains a whole object, not a reference to an object.",
+    "indication": "1",
+    "choices": [
+        {
+            "id": "0",
+            "content": "current_dog = dog1"
+        },
+        {
+            "id": "1",
+            "content": "print(current_dog.breed)"
+        },
+        {
+            "id": "2",
+            "content": "dog1 = Dog(\"Budddy\", \"Bulldog\")"
+        },
+        {
+            "id": "3",
+            "content": "print(current_dog.name)"
+        },
+        {
+            "id": "4",
+            "content": "dog2 = Dog(\"Max\", \"Labrador\")"
+        },
+        {
+            "id": "5",
+            "content": "current_dog = dog2"
+        },
+        {
+            "id": "6",
+            "content": "current_dog = Dog(dog1.name, dog1.breed)",
+            "fail_msg": "You create a copy of 'dog1', no need to copy it to find its name. ",
+            "distractor": "0"
+        },
+        {
+            "id": "7",
+            "content": "current_dog = Dog(dog2.name, dog2.breed)",
+            "fail_msg": "You create a copy of 'dog2', no need to copy it to find its breed.",
+            "distractor": "5"
+        }
+    ],
+    "input": {
+        "lines": [
+            4,
+            3,
+            0,
+            5,
+            1,
+            2,
+            -1,
+            -1
+        ],
+        "indent": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
+    }
+}

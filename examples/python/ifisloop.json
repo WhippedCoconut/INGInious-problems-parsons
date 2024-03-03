@@ -1,0 +1,45 @@
+﻿{
+    "context": "Rearrange the code blocks to print a countdown starting from 10 seconds until the arrival of the new year.\n\nMisconception:\n    - IfIsLoop: Students might mistake if-statements for while-statements.",
+    "indication": "1",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "print(\"Happy new year !\")"
+        },
+        {
+            "id": "1",
+            "content": "print(seconds_left)\nseconds_left = seconds_left - 1"
+        },
+        {
+            "id": "2",
+            "content": "while seconds_left > 0:"
+        },
+        {
+            "id": "3",
+            "content": "if seconds_left > 0:",
+            "fail_msg": "An if-statement is not a loop",
+            "distractor": "2"
+        },
+        {
+            "id": "4",
+            "content": "seconds_left = 10"
+        }
+    ],
+    "input": {
+        "lines": [
+            3,
+            2,
+            1,
+            -1,
+            0
+        ],
+        "indent": [
+            0,
+            1,
+            0,
+            0,
+            0
+        ]
+    }
+}

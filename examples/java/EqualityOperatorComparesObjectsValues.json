@@ -1,0 +1,33 @@
+﻿{
+    "context": "Rearrange the code blocks to ensure that the output of your code is true. The ``Point`` class have two attributes: ``x`` and ``y`` with are the coordinate (x,y) of the point.\n\nMisconception:\n  - EqualityOperatorComparesObjectsValues: The equality operator == compares two objects’ values.",
+    "indication": "1",
+    "choices": [
+        {
+            "id": "0",
+            "content": "System.out.println( p1.equals(p2) );"
+        },
+        {
+            "id": "1",
+            "content": "System.out.println(p1 == p2));",
+            "fail_msg": "When using the operator '==', the program only checks if both pointers are referencing the same object in memory. In this case, since p1 and p2 are different objects with the same values, the comparison returns false.",
+            "distractor": "0",
+            "pair": true
+        },
+        {
+            "id": "2",
+            "content": "Point p1 = new Point(2, 5);\nPoint p2 = new Point(2, 5);"
+        }
+    ],
+    "input": {
+        "lines": [
+            1,
+            -1,
+            0
+        ],
+        "indent": [
+            0,
+            0,
+            0
+        ]
+    }
+}

@@ -1,0 +1,45 @@
+﻿{
+    "context": "Rearrange the code blocks to construct a function that determines whether the value of the provided node is even. The parameter ``node`` represents an object with two attributes: ``value`` and ``next``, though ``node`` may be None. When ``node`` is None, the function should return False.\n\nMisconception:\n  - Expressions with operators **and** and **or** always evaluate all of their operands.",
+    "indication": "1",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "if node is not None and node.value % 2 == 0:"
+        },
+        {
+            "id": "1",
+            "content": "return True"
+        },
+        {
+            "id": "2",
+            "content": "def node_is_even(node):"
+        },
+        {
+            "id": "3",
+            "content": "return False"
+        },
+        {
+            "id": "5",
+            "content": "if node.value % 2 == 0 node is not None:",
+            "fail_msg": "If \"node\" is None, you will get an AttributeError('NoneType' object has no attribute 'value').",
+            "distractor": "0"
+        }
+    ],
+    "input": {
+        "lines": [
+            1,
+            2,
+            0,
+            3,
+            -1
+        ],
+        "indent": [
+            1,
+            2,
+            0,
+            1,
+            0
+        ]
+    }
+}

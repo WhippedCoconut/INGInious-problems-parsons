@@ -1,0 +1,55 @@
+﻿{
+    "name": "Multiplying Array elements",
+    "context": "Rearrange the code blocks to multiply each element by 2 of the array called ``table``.\nYou are not allowed to modify the original array.\n\nMisconception:\n  - Variable assignement copies the reference of the objects rather than creating a copy of the object.",
+    "indication": "1",
+    "indentation": true,
+    "grading": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "print(new_table)"
+        },
+        {
+            "id": "1",
+            "content": "for i in range(len(table)"
+        },
+        {
+            "id": "2",
+            "content": "table = [42,7,-5,17,0]"
+        },
+        {
+            "id": "3",
+            "content": "new_table = table.copy()"
+        },
+        {
+            "id": "4",
+            "content": "new_table[i] = new_table[i] * 2 "
+        },
+        {
+            "id": "5",
+            "content": "new_table = table",
+            "success_msg": "In order to keep the table unchanged, a duplicate of \"table\" must be created.",
+            "fail_msg": "Both variables \"table\" and \"new_table\" are assigned to the same table.",
+            "distractor": "3",
+            "pair": true
+        }
+    ],
+    "input": {
+        "lines": [
+            4,
+            2,
+            0,
+            1,
+            3,
+            -1
+        ],
+        "indent": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+        ]
+    }
+}

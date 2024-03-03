@@ -1,0 +1,56 @@
+﻿{
+    "name": "Feed the dog",
+    "context": "Rearrange the code blocks to feed your dog ``buddy`` is hungry.\n\nMisconception:\n    - ComparisonWithBoolLiteral: To determine whether an expression evaluates to True or False, one must use a relational operator (== or !=) to compare with a bool literal",
+    "indication": "1",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "buddy.feed()"
+        },
+        {
+            "id": "1",
+            "content": "if hungry:"
+        },
+        {
+            "id": "2",
+            "content": "hungry = buddy.is_hungry()"
+        },
+        {
+            "id": "3",
+            "content": "buddy = Dog(\"buddy\", \"bulldog\")"
+        },
+        {
+            "id": "4",
+            "content": "if hungry == True:",
+            "fail_msg": "The expression \"hungry\" has already been assessed as either True or False.",
+            "distractor": "1",
+            "pair": true
+        },
+        {
+            "id": "5",
+            "content": "if hungry == False:",
+            "fail_msg": "The expression \"hungry\" has already been assessed as either True or False.",
+            "distractor": "1",
+            "pair": true
+        }
+    ],
+    "input": {
+        "lines": [
+            3,
+            2,
+            1,
+            0,
+            -1,
+            -1
+        ],
+        "indent": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
+    }
+}

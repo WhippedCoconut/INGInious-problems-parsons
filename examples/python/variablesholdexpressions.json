@@ -1,0 +1,39 @@
+﻿{
+    "context": "Rearrange the code blocks to print the result of an addition using a higher-order function.\nA higher-order function is a function that takes one or more functions as arguments or returns a function as its result.\n\nMisconception:\n  - VariablesHoldExpressions: '=' stores an expression: it stores a reference to the expression in a variable",
+    "indication": "1",
+    "choices": [
+        {
+            "id": "0",
+            "content": "result = apply_operation(addition, 5, 3)\nprint(result)"
+        },
+        {
+            "id": "1",
+            "content": "addition = x + y",
+            "fail_msg": "NameError: name 'x' is not defined.",
+            "distractor": "2",
+            "pair": true
+        },
+        {
+            "id": "2",
+            "content": "addition = lambda x, y: x + y"
+        },
+        {
+            "id": "3",
+            "content": "def apply_operation(operation, value, *args):\n    return operation(value, *args)"
+        }
+    ],
+    "input": {
+        "lines": [
+            2,
+            -1,
+            1,
+            0
+        ],
+        "indent": [
+            0,
+            0,
+            0,
+            0
+        ]
+    }
+}

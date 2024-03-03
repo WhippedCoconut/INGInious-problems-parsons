@@ -1,0 +1,57 @@
+﻿{
+    "context": "Rearrange the code blocks to create a function that prints the sum of the n first integers.\n\nMisconception:\n  - LocalVariablesAutoInitialized: Local variables are automatically initialized.",
+    "indication": "2",
+    "choices": [
+        {
+            "id": "0",
+            "content": "    }"
+        },
+        {
+            "id": "1",
+            "content": "    for(int i = 0; i < n+1; i++){"
+        },
+        {
+            "id": "2",
+            "content": "public static sum(int n){"
+        },
+        {
+            "id": "3",
+            "content": "        sum+= i;"
+        },
+        {
+            "id": "4",
+            "content": "    int sum = 0;"
+        },
+        {
+            "id": "5",
+            "content": "}"
+        },
+        {
+            "id": "7",
+            "content": "    int sum;",
+            "fail_msg": "Before performing any operations on local variables, it is necessary to initialize them.",
+            "distractor": "4",
+            "pair": true
+        }
+    ],
+    "input": {
+        "lines": [
+            4,
+            2,
+            0,
+            3,
+            1,
+            5,
+            -1
+        ],
+        "indent": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
+    }
+}

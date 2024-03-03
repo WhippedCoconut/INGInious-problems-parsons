@@ -1,0 +1,63 @@
+﻿{
+    "context": "Rearrange the code blocks to ensure that the printed result follows the Estonian registration plate standard format for license plates, which consists of 3 digits followed by 3 letters (e.g., \"123ABC\").\n\nMisconception:\n  - ArithmeticPlusPrecedes: Addition has higher precedence than string concatenation. In a case like 1 + 2 + \"AAA\" + 3 + 4, first the numbers are added so we get 3 + \"AAA\" + 7, and then they are concatenated with the strings so we get \"3AAA7\".",
+    "indication": "1",
+    "choices": [
+        {
+            "id": "0",
+            "content": "String result = \"\";"
+        },
+        {
+            "id": "1",
+            "content": "int[] digits = camera.lastCart.getDigits();\nString letters = camera.lastCart.getLetters();"
+        },
+        {
+            "id": "2",
+            "content": "result = result + digits[0] + digits[1] + digits[2] + letters;"
+        },
+        {
+            "id": "3",
+            "content": "result += digits[0] + digits[1] + digits[2] + letters;",
+            "fail_msg": "By using 'result +=', the sum of the first digits will be calculated.",
+            "distractor": "2",
+            "pair": true
+        },
+        {
+            "id": "4",
+            "content": "result = digits[0] + digits[1] + digits[2] + letters;",
+            "fail_msg": "The first three digits will be summed before the letters are concatened.",
+            "distractor": "2",
+            "pair": true
+        },
+        {
+            "id": "5",
+            "content": "System.out.println(result);"
+        },
+        {
+            "id": "6",
+            "content": "String result;",
+            "fail_msg": "The variable \"result\" needs to be initialized as a String in order to concat digits, otherwise the digits will be summed up together.",
+            "distractor": "0",
+            "pair": true
+        }
+    ],
+    "input": {
+        "lines": [
+            1,
+            0,
+            2,
+            -1,
+            -1,
+            3,
+            -1
+        ],
+        "indent": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
+    }
+}

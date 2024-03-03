@@ -1,0 +1,72 @@
+﻿{
+    "name": "What shape does that figure have ?",
+    "context": "Rearrange the code blocks to print what is the **main shape** of the given figure.\nNote that **a square is also a rectangle and a rhombus** but you only need to print that the figure is a square.\n\nMisconception:\n    - ConditionalIsSequence: If-else is equivalent to sequence of two ifs",
+    "indication": "2",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "1",
+            "content": "else:"
+        },
+        {
+            "id": "3",
+            "content": "def shape(figure):"
+        },
+        {
+            "id": "4",
+            "content": "if figure.is_square():"
+        },
+        {
+            "id": "5",
+            "content": "print(\"The figure is neither a rhombus or square\")"
+        },
+        {
+            "id": "6",
+            "content": "elif figure.is_rhombus():"
+        },
+        {
+            "id": "7",
+            "content": "print(\"The figure is a square\")"
+        },
+        {
+            "id": "8",
+            "content": "print(\"The figure is a rhombus\")"
+        },
+        {
+            "id": "9",
+            "content": "if figure.is_rhombus():",
+            "fail_msg": "If the figure is a square, your code will take into account that it is a rhombus.",
+            "distractor": "6"
+        },
+        {
+            "id": "11",
+            "content": "elif figure.is_square():",
+            "fail_msg": "You should check first if the figure is a square.",
+            "distractor": "4"
+        }
+    ],
+    "input": {
+        "lines": [
+            5,
+            0,
+            1,
+            6,
+            3,
+            2,
+            4,
+            -1,
+            -1
+        ],
+        "indent": [
+            1,
+            0,
+            1,
+            2,
+            1,
+            2,
+            2,
+            0,
+            0
+        ]
+    }
+}

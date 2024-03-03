@@ -1,0 +1,39 @@
+﻿{
+    "context": "Rearrange the code blocks to create a Class Object ``\"Dog\"``. A Dog have multiple attributes: name, breed and owner.\n\n\nMisconception:\n    - InitCreates: __init__ must create a new object",
+    "indication": "1",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "self.dog = Dog(name, breed, owner)",
+            "fail_msg": "If you make a new Dog inside the Dog's init function, it will keep trying to create new Dogs forever, causing the program to get stuck in an endless loop.",
+            "distractor": "2"
+        },
+        {
+            "id": "1",
+            "content": "class Dog:"
+        },
+        {
+            "id": "2",
+            "content": "self.name = name\nself.breed = breed\nself.owner = owner"
+        },
+        {
+            "id": "3",
+            "content": "def __init__(self, name, breed, owner):"
+        }
+    ],
+    "input": {
+        "lines": [
+            -1,
+            0,
+            2,
+            1
+        ],
+        "indent": [
+            0,
+            0,
+            2,
+            1
+        ]
+    }
+}

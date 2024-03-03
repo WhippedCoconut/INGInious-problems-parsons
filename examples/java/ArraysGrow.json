@@ -1,0 +1,78 @@
+﻿{
+    "context": "Rearrange the code blocks to resize the array 'a' by doubling its current size without modifying the content already inside. The new \"empty\" elements of the array should be 0.\n\n.. code-block:: java\n\n    int[] a = {1, 2, 3, 4, 5};\n\nMisconception:\n  - ArraysGrow: Arrays can grow dynamically, length can be modified or new elements can be added.",
+    "indication": "1",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "a = Arrays.copyOf(a, a.length * 2);"
+        },
+        {
+            "id": "1",
+            "content": "int[] newArray = new int[a.length * 2];",
+            "fail_msg": "There is no need to use another variable than \"a\".",
+            "distractor": "0"
+        },
+        {
+            "id": "2",
+            "content": "for(int i=0; i<a.length; i++){",
+            "distractor": "0"
+        },
+        {
+            "id": "3",
+            "content": "newArray[i] = a[i];",
+            "distractor": "0"
+        },
+        {
+            "id": "4",
+            "content": "}",
+            "distractor": "0"
+        },
+        {
+            "id": "5",
+            "content": "a = newArray;",
+            "distractor": "0"
+        },
+        {
+            "id": "6",
+            "content": "a.length = a.length * 2;",
+            "fail_msg": "The length of an array, accessed via 'Array.length', is final and therefore cannot be modified.",
+            "distractor": "0"
+        },
+        {
+            "id": "7",
+            "content": "a.add(0);",
+            "fail_msg": "The Array a have no method called \"add\".",
+            "distractor": "0"
+        },
+        {
+            "id": "8",
+            "content": "a[a.length + i] = 0;",
+            "distractor": "0"
+        }
+    ],
+    "input": {
+        "lines": [
+            0,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1
+        ],
+        "indent": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
+    }
+}

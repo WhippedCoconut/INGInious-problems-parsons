@@ -1,0 +1,47 @@
+﻿{
+    "context": "Rearrange the code blocks to create a Class Object ``\"Dog\"``. A Dog have multiple attributes: name, breed and owner.\n\n\nMisconception:\n    - InitReturnObject: __init__ must return an object.",
+    "indication": "1",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "def __init__(self, name, breed, owner):"
+        },
+        {
+            "id": "1",
+            "content": "self.name = name\nself.owner = owner\nself.breed = breed"
+        },
+        {
+            "id": "2",
+            "content": "class Dog:"
+        },
+        {
+            "id": "3",
+            "content": "return Dog(name, breed, owner)",
+            "fail_msg": "If you return a Dog inside the Dog's init function, it will keep trying to create new Dogs forever, causing the program to get stuck in an endless loop.",
+            "distractor": "1"
+        },
+        {
+            "id": "4",
+            "content": "return self",
+            "fail_msg": "You don´t need to return self when creating an object.",
+            "distractor": "1"
+        }
+    ],
+    "input": {
+        "lines": [
+            1,
+            2,
+            0,
+            -1,
+            -1
+        ],
+        "indent": [
+            1,
+            2,
+            0,
+            0,
+            0
+        ]
+    }
+}

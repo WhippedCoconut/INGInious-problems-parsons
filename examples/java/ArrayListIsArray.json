@@ -1,0 +1,64 @@
+﻿{
+    "context": "Reorder the code blocks to initialize an array named ``classrooms``, where each element is a list containing the ages of every student currently in the respective classroom. There are five rooms with an undetermined number of students inside. Since the exact number of students is unknown, we will use ArrayLists to store the age of each student.\n\nMisconception:\n  - ArrayListIsArray",
+    "indication": "1",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "for(int i = 0; i < classrooms.length; i++){"
+        },
+        {
+            "id": "1",
+            "content": "ArrayList<Integer>[] classrooms = new ArrayList[5];"
+        },
+        {
+            "id": "2",
+            "content": "}"
+        },
+        {
+            "id": "3",
+            "content": "classrooms[i] = new ArrayList();"
+        },
+        {
+            "id": "4",
+            "content": "int[][] classrooms = new ArrayList<ArrayList<Integer>>();",
+            "fail_msg": "ArrayList<ArrayList<Integer>> cannot be converted to int[][]",
+            "distractor": "1",
+            "pair": true
+        },
+        {
+            "id": "5",
+            "content": "int[] classrooms = new ArrayList<Integer>(5);",
+            "fail_msg": "ArrayList<Integer> cannot be converted to int[]",
+            "distractor": "1",
+            "pair": true
+        },
+        {
+            "id": "6",
+            "content": "int[][] classrooms = new int[5][new ArrayList<Integer>()];",
+            "fail_msg": "ArrayList<Integer> cannot be converted to int. The given size of the sub-array is not an integer.",
+            "distractor": "1",
+            "pair": true
+        }
+    ],
+    "input": {
+        "lines": [
+            1,
+            0,
+            3,
+            2,
+            -1,
+            -1,
+            -1
+        ],
+        "indent": [
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0
+        ]
+    }
+}

@@ -1,0 +1,55 @@
+﻿{
+    "context": "Rearrange the code blocks to complete the function ``equals(a, b)``. The function returns True if ``a`` and ``b`` are equal, and False otherwise.\n\nMisconception:\n  - MapToBooleanWithIf: In order to convert a boolean expression to a bool value, the use of an if statement is required.\n  - MapToBooleanWithTernaryOperator: To map a boolean expression to a bool, a ternary conditional operator is necessary.",
+    "indication": "2",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "return a==b"
+        },
+        {
+            "id": "1",
+            "content": "if a==b:",
+            "fail_msg": "You don't need an if statement.",
+            "distractor": "0"
+        },
+        {
+            "id": "2",
+            "content": "return True",
+            "distractor": "0"
+        },
+        {
+            "id": "3",
+            "content": "def equals(a, b):"
+        },
+        {
+            "id": "4",
+            "content": "return False",
+            "distractor": "0"
+        },
+        {
+            "id": "5",
+            "content": "return a==b if True else False",
+            "fail_msg": "The ternary operator \"if True else False\" is wrongly used.  The correct usage is \"variable = *some_value* if CONDITION else *some_another_value*\". In that specific case, using True as a condition makes the use of such operator useless.",
+            "distractor": "0"
+        }
+    ],
+    "input": {
+        "lines": [
+            1,
+            -1,
+            -1,
+            0,
+            -1,
+            -1
+        ],
+        "indent": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
+    }
+}

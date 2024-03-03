@@ -1,0 +1,45 @@
+﻿{
+    "context": "Rearrange the code blocks to complete a recursive fonction ``fact(n)`` that return the factorial of `n`.\nThe factorial of an integer has the following formula:\n\n.. code-block::\n\n    n!=n×(n−1)!\n\nMisconception:\n  - RecursiveFunctionNeedsIfElse: A recursive function needs to contain an if-else statement.",
+    "indication": "1",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "if n==0:"
+        },
+        {
+            "id": "1",
+            "content": "return n * fact(n-1)"
+        },
+        {
+            "id": "2",
+            "content": "def fact(n):"
+        },
+        {
+            "id": "3",
+            "content": "return 1"
+        },
+        {
+            "id": "4",
+            "content": "else:",
+            "fail_msg": "An else statement is not needed for that function.",
+            "distractor": "0"
+        }
+    ],
+    "input": {
+        "lines": [
+            1,
+            3,
+            0,
+            2,
+            -1
+        ],
+        "indent": [
+            1,
+            1,
+            0,
+            2,
+            0
+        ]
+    }
+}

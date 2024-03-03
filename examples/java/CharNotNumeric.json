@@ -1,0 +1,45 @@
+﻿{
+    "context": "Rearrange the code blocks to print the entire alphabet. In the ASCII table, the uppercase letter ``A`` corresponds to the decimal value 65, and the uppercase letter ``Z`` corresponds to the decimal value 90.\n\nMisconception:\n  - CharNotNumeric",
+    "indication": "2",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "while (c < 91){"
+        },
+        {
+            "id": "1",
+            "content": "c++;",
+            "fail_msg": "The variable c should increment in the loop."
+        },
+        {
+            "id": "2",
+            "content": "char c = 'A';"
+        },
+        {
+            "id": "3",
+            "content": "System.out.println(c);",
+            "fail_msg": "You should print in the loop, before update the character."
+        },
+        {
+            "id": "4",
+            "content": "}"
+        }
+    ],
+    "input": {
+        "lines": [
+            1,
+            3,
+            0,
+            2,
+            4
+        ],
+        "indent": [
+            0,
+            1,
+            0,
+            1,
+            0
+        ]
+    }
+}

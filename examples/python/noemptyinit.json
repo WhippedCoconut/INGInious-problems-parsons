@@ -1,0 +1,51 @@
+﻿{
+    "context": "Rearrange the code blocks to make a Dog bark. The ``Dog`` class has two function, ``init`` and ``bark``. Make sure that the ``init`` function is the first function of the class.\n\nMisconception:\n  - NoEmptyInit: the __init__ function must do something.",
+    "indication": "1",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "my_dog.bark()"
+        },
+        {
+            "id": "1",
+            "content": "def __init__(self):\n    pass"
+        },
+        {
+            "id": "2",
+            "content": "class Dog:"
+        },
+        {
+            "id": "3",
+            "content": "my_dog = Dog()"
+        },
+        {
+            "id": "4",
+            "content": "def bark():\n    print(\"Woof\")"
+        },
+        {
+            "id": "5",
+            "content": "def __init__(self):\n    self.dog = \"dog\"",
+            "fail_msg": "The variable self.dog is intialized but not used.",
+            "distractor": "1"
+        }
+    ],
+    "input": {
+        "lines": [
+            4,
+            1,
+            0,
+            3,
+            2,
+            -1
+        ],
+        "indent": [
+            0,
+            1,
+            0,
+            0,
+            1,
+            0
+        ]
+    }
+}

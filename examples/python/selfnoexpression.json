@@ -1,0 +1,51 @@
+﻿{
+    "context": "Rearrange the code blocks to instantiate a Person object with two attributes (name and age). This object should include a function that updates the person's age and returns the updated object.\n\nMisconception:\n  - SelfNoExpression: In a method body, self is not an expression. It can only be used for the specific purpose of instance variable accesses and method calls/accesses.",
+    "indication": "1",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "def update_age(self, new_age):"
+        },
+        {
+            "id": "1",
+            "content": "def __init__(self, name, age):\n    self.name = name\n    self.age = age"
+        },
+        {
+            "id": "2",
+            "content": "class Person:"
+        },
+        {
+            "id": "3",
+            "content": "return self"
+        },
+        {
+            "id": "4",
+            "content": "return Person(self.name, self.age)",
+            "fail_msg": "We aim to modify the existing object rather than creating a new one.",
+            "distractor": "3"
+        },
+        {
+            "id": "5",
+            "content": "self.age = new_age"
+        }
+    ],
+    "input": {
+        "lines": [
+            2,
+            1,
+            0,
+            4,
+            -1,
+            3
+        ],
+        "indent": [
+            1,
+            1,
+            0,
+            2,
+            0,
+            2
+        ]
+    }
+}

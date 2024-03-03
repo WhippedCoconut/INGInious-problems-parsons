@@ -1,0 +1,48 @@
+﻿{
+    "context": "Based on the following code, reorder the blocks in the correct sequence to ensure that the call trace follows a chronological order.\n\n.. code-block:: python\n\n    mean(max(2, 8, 5), min(11, 6, 9, 4))\n\n\nMisconception:\n  - OutsideInFunctionNesting: When nesting function calls, like with a(b()), calls are invoked from the outside in: first a() is invoked, then b() is invoked.",
+    "indication": "2",
+    "choices": [
+        {
+            "id": "0",
+            "content": "RETURN max"
+        },
+        {
+            "id": "1",
+            "content": "RETURN min"
+        },
+        {
+            "id": "2",
+            "content": "CALL mean"
+        },
+        {
+            "id": "3",
+            "content": "RETURN mean"
+        },
+        {
+            "id": "4",
+            "content": "CALL max"
+        },
+        {
+            "id": "5",
+            "content": "CALL min"
+        }
+    ],
+    "input": {
+        "lines": [
+            2,
+            4,
+            0,
+            5,
+            1,
+            3
+        ],
+        "indent": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
+    }
+}

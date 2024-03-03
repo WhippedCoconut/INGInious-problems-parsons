@@ -1,0 +1,71 @@
+﻿{
+    "context": "Rearrange the code blocks to create a class ``Counter`` then itialize a new **immutable** counter and count to 5.\n\nMisconception:\n  - FinalReferenceImpliesImmutability: If a final variable refers to an object, that object is immutable.",
+    "indication": "2",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "}"
+        },
+        {
+            "id": "1",
+            "content": "public void increment() {\n    count++;\n}"
+        },
+        {
+            "id": "2",
+            "content": "final Counter count = new Counter();"
+        },
+        {
+            "id": "3",
+            "content": "private int count;"
+        },
+        {
+            "id": "4",
+            "content": "for (int i = 0; i < 5; i++){\n    count.increment();\n}"
+        },
+        {
+            "id": "5",
+            "content": "class Counter {"
+        },
+        {
+            "id": "6",
+            "content": "public Counter(){\n    count = 0;\n}"
+        },
+        {
+            "id": "7",
+            "content": "private final int count;",
+            "fail_msg": "If you set the instance variable as final, you can not increment the counter.",
+            "distractor": "3"
+        },
+        {
+            "id": "8",
+            "content": "Counter count = new Counter();",
+            "fail_msg": "The counter is not immutable.",
+            "distractor": "2"
+        }
+    ],
+    "input": {
+        "lines": [
+            4,
+            3,
+            5,
+            1,
+            6,
+            0,
+            2,
+            -1,
+            -1
+        ],
+        "indent": [
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+        ]
+    }
+}

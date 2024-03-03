@@ -1,0 +1,61 @@
+﻿{
+    "context": "Rearrange the code blocks to create a method ``sumArray`` within class C that takes an integer array (``int[] a``) as parameters and returns the sum of all elements in the given array.\n\nMisconception:\n  - ControlledLocalAccess: It is possible to control the acces of local variables.",
+    "indication": "2",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "int sum = 0;"
+        },
+        {
+            "id": "1",
+            "content": "for (int elem : a){\n    sum += elem;\n}"
+        },
+        {
+            "id": "2",
+            "content": "public int sumArray(int[] a){"
+        },
+        {
+            "id": "3",
+            "content": "}"
+        },
+        {
+            "id": "4",
+            "content": "return sum;"
+        },
+        {
+            "id": "5",
+            "content": "public int sum = 0;",
+            "fail_msg": "The variable sum is declared as a local variable inside the 'sumArray' method, making it inaccessible from outside the method scope in any way. You can not make it accessible by using the \"public\" access modifier. ",
+            "distractor": "0",
+            "pair": true
+        },
+        {
+            "id": "6",
+            "content": "private int sum = 0;",
+            "fail_msg": "The variable sum is declared as a local variable inside the 'sumArray' method, making it already inaccessible from outside the method scope in any way.",
+            "distractor": "0",
+            "pair": true
+        }
+    ],
+    "input": {
+        "lines": [
+            1,
+            2,
+            0,
+            4,
+            3,
+            -1,
+            -1
+        ],
+        "indent": [
+            1,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0
+        ]
+    }
+}

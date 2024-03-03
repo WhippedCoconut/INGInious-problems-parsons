@@ -1,0 +1,52 @@
+﻿{
+    "context": "Reorganize the code blocks to create a class ``C`` with a **private** attribute named ``key``, along with two methods. The first method, named ``compareKeys``, compares the key of the current object with the key of another object of type C. The second method is a getter method for accessing the value of the ``key`` attribute.\n\nMisconception:\n  - PrivateFromOtherInstance: An object can access private members of other objects of the same class.",
+    "indication": "1",
+    "indentation": true,
+    "choices": [
+        {
+            "id": "0",
+            "content": "public class C {"
+        },
+        {
+            "id": "1",
+            "content": "}"
+        },
+        {
+            "id": "2",
+            "content": "public boolean compareKeys(C other) {\n    return this.key == other.getKey();\n}"
+        },
+        {
+            "id": "3",
+            "content": "private int key;"
+        },
+        {
+            "id": "4",
+            "content": "public int getKey() {\n    return this.key;\n}"
+        },
+        {
+            "id": "5",
+            "content": "public boolean compareKeys(C other) {\n    return this.key == other.key;\n}",
+            "fail_msg": "The key field for the other object is private and inaccessible by this.",
+            "distractor": "2",
+            "pair": true
+        }
+    ],
+    "input": {
+        "lines": [
+            0,
+            4,
+            2,
+            1,
+            3,
+            -1
+        ],
+        "indent": [
+            0,
+            0,
+            1,
+            1,
+            1,
+            0
+        ]
+    }
+}

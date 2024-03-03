@@ -1,0 +1,41 @@
+﻿{
+    "name": "Comparison of variables",
+    "context": "Rearrange the code blocks to print \"Variables are equal\" if both variables are equal.\nThe function ``randint(a, b)`` generates a random integer from the interval [a, b].\n\n\nMisconception:\n  - Novice programmers often have misconceptions about the ``=`` operator and the ``==`` boolean condition because they conflate the two due to their similarity in appearance and the prior knowledge in mathematics where ``=`` is a comparison operator.",
+    "indication": "1",
+    "choices": [
+        {
+            "id": "0",
+            "content": "if variable1 == variable2:\n    print(\"Variables are equal\")"
+        },
+        {
+            "id": "1",
+            "content": "variable1 = randint(0, 10)\nvariable2 = randint(0, 5)"
+        },
+        {
+            "id": "3",
+            "content": "else:\n    print(\"Variables are not equal\")"
+        },
+        {
+            "id": "4",
+            "content": "if variable1 = variable2:\n    print(\"Variables are equal\")",
+            "success_msg": "In Python, the equality comparison is performed using the \"==\" operator",
+            "fail_msg": "The \"=\" operator does not compare values, it assigns the value to the variable on the left.",
+            "distractor": "0",
+            "pair": true
+        }
+    ],
+    "input": {
+        "lines": [
+            1,
+            0,
+            2,
+            -1
+        ],
+        "indent": [
+            0,
+            0,
+            0,
+            0
+        ]
+    }
+}
