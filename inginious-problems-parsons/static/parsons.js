@@ -14,6 +14,9 @@ function studio_init_template_parsons(well, pid, problem) {
     // Ranged or boolean grading
     if ("grading" in problem)
         $("#grading-" + pid).click();
+    // Ranged or boolean grading
+    if ("length_feedback" in problem)
+        $("#length-feedback-" + pid).click();
     // 1D or 2D problem
     if ("indentation" in problem)
         $("#indentation-" + pid).click();

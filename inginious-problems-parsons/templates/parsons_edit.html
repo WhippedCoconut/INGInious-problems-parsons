@@ -26,7 +26,6 @@
             <option selected="selected" value="0">Disabled</option>
             <option value="1">Vague (errors in red)</option>
             <option value="2">Complete (errors in red, near good placement in orange, wrong indent tag)</option>
-            <!-- <option disabled value="3">Full indication (errors in red, wrong indent in yellow, wrong placement in purple) **WIP**</option> -->
         </select>
     </div>
 </div>
@@ -35,6 +34,13 @@
     <label for="grading-PID" class="col-sm-2 control-label">Enable ranged grading</label>
     <div class="col-10">
         <input type="checkbox" id="grading-PID" name="problem[PID][grading]">
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="length-feedback-PID" class="col-sm-2 control-label">Solution length feedback</label>
+    <div class="col-10">
+        <input type="checkbox" id="length-feedback-PID" name="problem[PID][length_feedback]">
     </div>
 </div>
 

@@ -34,6 +34,7 @@ class ParsonsProblem(Problem):
         self._indication = content["indication"]
         self._indentation = True if "indentation" in content else False
         self._ranged_grading = True if "grading" in content else False
+        self._length_feedback = True if "length_feedback" in content else False
         self._size = len(content["choices"]) if "choices" in content else None
 
         self._choices = []
@@ -135,9 +136,9 @@ class ParsonsProblem(Problem):
         # one value for each item placed inside the solution, {0: ok, 1: wrong placement, 2: wrong indent}
         items_feedback = [-1 for _ in range(solution_size)]
 
-        if solution_size < len(self._inputs_sequence):
+        if self._length_feedback and solution_size < len(self._inputs_sequence):
             block_msg += "\n  - (-) Solution is too short"
-        if solution_size > len(self._inputs_sequence):
+        if self._length_feedback and solution_size > len(self._inputs_sequence):
             block_msg += "\n  - (-) Solution is too long"
 
         for i in range(len(answer["sequence"])):
@@ -180,6 +181,8 @@ class ParsonsProblem(Problem):
         parsed_content = Problem.parse_problem(problem_content)
         if "indentation" in parsed_content:
             parsed_content["indentation"] = True
+        if "length_feedback" in parsed_content:
+            parsed_content["length_feedback"] = True
 
         if "choices" in parsed_content:
             parsed_content["choices"] = [val for _, val in
