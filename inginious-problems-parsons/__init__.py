@@ -122,6 +122,7 @@ class ParsonsProblem(Problem):
         else:
             answer = json.loads(task_input[self.get_id()])
 
+        # generate the sequence of the answer following the blocks placement
         answer["sequence"] = [-1 for _ in range(self._size)]
         for i in range(self._size):
             if answer["lines"][i] == -1:
@@ -133,7 +134,7 @@ class ParsonsProblem(Problem):
         block_msg = ""
         invalid_count = len(self._inputs_sequence)
         LIS_result = self.LIS(answer["sequence"])
-        # one value for each item placed inside the solution, {0: ok, 1: wrong placement, 2: wrong indent}
+        # one value for each item placed inside the solution
         items_feedback = [-1 for _ in range(solution_size)]
 
         if self._length_feedback and solution_size < len(self._inputs_sequence):
@@ -158,9 +159,12 @@ class ParsonsProblem(Problem):
             if items_feedback[i] == 0 or (items_feedback[i] == 2 and int(self._indication) < 2):
                 invalid_count -= 1
 
-            if ((int(self._indication) == 2 and items_feedback[i] > 0) or (int(self._indication) < 2 and items_feedback[i] != 2)) and ("fail_msg" in self._choices[answer["sequence"][i]]):
+            # if indication is complete and block placement is not the exact placement
+            # OR if indication is partial and block placement is not in the LIS
+            block_failed = ((int(self._indication) == 2 and items_feedback[i] > 0) or (int(self._indication) < 2 and items_feedback[i] != 2))
+            if block_failed and ("fail_msg" in self._choices[answer["sequence"][i]]):
                 block_msg += ("\n  - (-) " + self._choices[answer["sequence"][i]]["fail_msg"])
-            if (items_feedback[i] == 0) and ("success_msg" in self._choices[answer["sequence"][i]]):
+            elif not block_failed and ("success_msg" in self._choices[answer["sequence"][i]]):
                 block_msg += ("\n  - (+) " + self._choices[answer["sequence"][i]]["success_msg"])
 
         #  retrieve the success message for unused distractors, which is the correct solution.
