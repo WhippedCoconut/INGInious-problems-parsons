@@ -14,13 +14,13 @@ function ParsonsDragAndDrop(itemID, options) {
 
     this.items.forEach((item) => {
         item.addEventListener("dragstart", (elem) => {
-            item.classList.add(itemID + "dragging");
+            item.classList.add("dragging-" + itemID);
             this.startItemLeftX = elem.clientX - item.getBoundingClientRect().left;
             this.draggingItemIndex = this.getIndex(item);
             // used to disable other paired items when inside the same pairing
             this.dragStartPairs = null;
             if ($(item).is("[class^=paired-" + itemID + "]") && $(item).parent().parent().is(this.distractorList))
-                this.dragStartPairs = [...document.querySelectorAll("." + item.parentElement.id + ":not(." + itemID + "dragging")];
+                this.dragStartPairs = [...document.querySelectorAll("." + item.parentElement.id + ":not(.dragging-" + itemID + ")")];
 
             if (!options.edit) {
                 // reset all items border class to avoid keeping border color of previous feedback
@@ -39,7 +39,7 @@ function ParsonsDragAndDrop(itemID, options) {
                 $(this.dragStartPairs).attr("draggable", false).removeClass("bg-white").addClass("bg-gray");
             else if ($(item).hasClass(item.parentElement.id))
                 $(item).parent().children().not("h6").attr("draggable", true).removeClass("bg-gray").addClass("bg-white");
-            item.classList.remove(itemID + "dragging");
+            item.classList.remove("dragging-" + itemID);
             this.updateValues();
             this.updateResult();
         });
@@ -51,8 +51,8 @@ function ParsonsDragAndDrop(itemID, options) {
     if (!options.edit) {
         this.distractorList.addEventListener("dragover", (elem) => {
             elem.preventDefault();
-            let draggingItem = document.querySelector('.' + itemID + "dragging");
-            let otherItems = [...this.distractorList.querySelectorAll("[id^=choice-" + itemID + "]:not(." + itemID + "dragging):not([class^=paired-" + itemID + "])")];
+            let draggingItem = document.querySelector(".dragging-" + itemID);
+            let otherItems = [...this.distractorList.querySelectorAll("[id^=choice-" + itemID + "]:not(.dragging-" + itemID + "):not([class^=paired-" + itemID + "])")];
             let nextItem = otherItems.find(item => {
                 let rect = item.getBoundingClientRect();
                 return elem.clientY <= rect.top + item.offsetHeight / 2;
@@ -66,8 +66,8 @@ function ParsonsDragAndDrop(itemID, options) {
 
     this.resultList.addEventListener("dragover", (elem) => {
         elem.preventDefault();
-        let draggingItem = document.querySelector('.' + itemID + "dragging");
-        let otherItems = [...this.resultList.querySelectorAll("[id^=choice-" + itemID + "]:not(." + itemID + "dragging)")];
+        let draggingItem = document.querySelector(".dragging-" + itemID);
+        let otherItems = [...this.resultList.querySelectorAll("[id^=choice-" + itemID + "]:not(.dragging-" + itemID + ")")];
         let nextItem = otherItems.find(item => {
             let rect = item.getBoundingClientRect();
             return elem.clientY <= rect.top + item.offsetHeight / 2;
@@ -87,7 +87,7 @@ function ParsonsDragAndDrop(itemID, options) {
     this.pairedList.forEach((list) => {
         list.addEventListener("dragover", (elem) => {
             elem.preventDefault();
-            let draggingItem = document.querySelector('.' + itemID + "dragging");
+            let draggingItem = document.querySelector(".dragging-" + itemID);
             let nextItem = null
             if (this.dragStartPairs) {
                 nextItem = this.dragStartPairs.find(item => {
@@ -113,13 +113,13 @@ ParsonsDragAndDrop.prototype.addDraggable = function (index) {
     this.updateResult();
 
     item.addEventListener("dragstart", (elem) => {
-        item.classList.add(this.itemID + "dragging");
+        item.classList.add("dragging-" + this.itemID);
         this.draggingItemIndex = this.getIndex(item);
         this.startItemLeftX = elem.clientX - item.getBoundingClientRect().left;
     });
 
     item.addEventListener("dragend", () => {
-        item.classList.remove(this.itemID + "dragging");
+        item.classList.remove("dragging-" + this.itemID);
         this.updateValues();
         this.updateResult();
     });
