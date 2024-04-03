@@ -193,6 +193,8 @@ function parsons_generate_from_file(pid) {
                     $("#indication-" + pid).val(data.indication);
                 if ("grading" in data)
                     $("#grading-" + pid).click();
+                if ("length_feedback" in data)
+                    $("#length-feedback-" + pid).click();
                 if ("indentation" in data)
                     $("#indentation-" + pid).click();
                 if ("choices" in data){
@@ -257,6 +259,8 @@ function parsons_export_file(pid) {
         data.indentation = true;
     if ($("#grading-" + pid).is(":checked"))
         data.grading = true;
+    if ($("#length-feedback-" + pid).is(":checked"))
+        data.length_feedback = true;
 
     data.choices = [];
     dragAndDropDict[pid].items.forEach((item) => {
