@@ -24,12 +24,12 @@ function ParsonsDragAndDrop(itemID, options) {
 
             if (!options.edit) {
                 // reset all items border class to avoid keeping border color of previous feedback
-                this.items.forEach((i) => {
-                    i.classList.remove("border-danger");
-                    i.classList.remove("border-success");
-                    i.classList.remove("border-warning");
-                    i.classList.add("border");
-                    i.classList.add("border-primary");
+                this.items.forEach((item) => {
+                    $(item).removeClass("border-danger")
+                        .removeClass("border-success")
+                        .removeClass("border-warning")
+                        .addClass("border border-primary");
+                    $(item).find(".indent-feedback").removeClass("indent-feedback").addClass("invisible");
                 });
             }
         });
@@ -38,7 +38,7 @@ function ParsonsDragAndDrop(itemID, options) {
             if (this.dragStartPairs !== null && $(item).parent().is(this.resultList))
                 $(this.dragStartPairs).attr("draggable", false).removeClass("bg-white").addClass("bg-gray");
             else if ($(item).hasClass(item.parentElement.id))
-                $(item).parent().children().not("h6").attr("draggable", true).removeClass("bg-gray").addClass("bg-white");
+                $(item).parent().children().not("h6").not(".hint-disabled").attr("draggable", true).removeClass("bg-gray").addClass("bg-white");
             item.classList.remove("dragging-" + itemID);
             this.updateValues();
             this.updateResult();
@@ -163,7 +163,8 @@ ParsonsDragAndDrop.prototype.updateValues = function () {
 ParsonsDragAndDrop.prototype.updateResult = function () {
     let result = {
         lines: this.itemsValues,
-        indent: this.itemsIndent
+        indent: this.itemsIndent,
+        state: parsonsStates[this.itemID]
     };
     $(".parsons-result-input-" + this.itemID).val(JSON.stringify(result));
 };
@@ -197,6 +198,17 @@ ParsonsDragAndDrop.prototype.loadInput = function (input) {
             sortedItems.splice(this.itemsValues[i], 1, this.items[i]);
         }
 
+        if (!options.edit) {
+            // reset the dragability in case it was disabled by adaptive hints
+            $(this.items[i]).attr("draggable", true).addClass("bg-white").removeClass("bg-gray");
+            //reset border feedback if any
+            $(this.items[i]).removeClass("border-danger")
+                .removeClass("border-success")
+                .removeClass("border-warning")
+                .removeClass("hint-disabled")
+                .addClass("border border-primary");
+            $(this.items[i]).find(".indent-feedback").removeClass("indent-feedback").addClass("invisible");
+        }
         // moves every item in the distractor list to reorder items in the result list
         if ($(this.items[i]).is("[class^=paired-]")) { // moving paired blocks
             let list = this.pairedList.find(list => {

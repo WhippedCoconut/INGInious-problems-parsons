@@ -1,4 +1,5 @@
 let dragAndDropDict = {};
+let parsonsStates = {};
 function studio_init_template_parsons(well, pid, problem) {
     // Success message
     let editor = registerCodeEditor($("#msg-success-" + pid)[0], 'rst', 1);
@@ -14,9 +15,16 @@ function studio_init_template_parsons(well, pid, problem) {
     // Ranged or boolean grading
     if ("grading" in problem)
         $("#grading-" + pid).click();
-    // Ranged or boolean grading
+    // Length feedback
     if ("length_feedback" in problem)
         $("#length-feedback-" + pid).click();
+    // Adaptive settings
+    if ("adaptive" in problem){
+        $("#adaptive-" + pid).click();
+        $("#adaptive-start-" + pid).val(problem["adaptive-params"][0]);
+        $("#adaptive-interval-" + pid).val(problem["adaptive-params"][1]);
+        $("#adaptive-stop-" + pid).val(problem["adaptive-params"][2]);
+    }
     // 1D or 2D problem
     if ("indentation" in problem)
         $("#indentation-" + pid).click();
@@ -25,7 +33,6 @@ function studio_init_template_parsons(well, pid, problem) {
     jQuery.each(problem["choices"], function(_, elem) {
         parsons_create_choice(pid, elem);
     });
-
     // load the correct order and indentation of items
     parsons_load_problem_input(pid, problem["inputs"]);
 }
@@ -35,15 +42,17 @@ function load_input_parsons(submissionid, key, input) {
 }
 
 function load_feedback_parsons(key, content) {
+    // reset feedback if any
+    $("[id^=choice-" + key +  "]").removeClass("border-danger")
+        .removeClass("border-success")
+        .removeClass("border-warning")
+        .removeClass("hint-disabled")
+        .addClass("border border-primary");
     let parsing = parsons_parse_feedback_content(content[1]);
     load_feedback_code(key, [content[0], parsing.feedback]);
     let itemsInResult = $("#result-" + key).children();
     jQuery.each(itemsInResult, (index, item) => {
-        // reset previous feedback if any
-        $(item).removeClass("border-danger")
-            .removeClass("border-success")
-            .removeClass("border-warning")
-            .addClass("border border-primary");
+        // reset indent feedback if any
         $(item).find(".indent-feedback").removeClass("indent-feedback").addClass("invisible");
         if (parsing.indication === 1){
             if (parsing.table[index] > 2)
@@ -62,6 +71,39 @@ function load_feedback_parsons(key, content) {
                 $(item).find(".invisible").removeClass("invisible").addClass("indent-feedback")
         }
     });
+
+    // Adaptive modifications
+    // TODO: move to hint button when added
+    parsing.hints[1].forEach((id) => {
+        let distractor = $("#choice-" + key + "-" + id);
+        // reset previous feedback if any
+        distractor.removeClass("border-danger")
+            .removeClass("border-success")
+            .removeClass("border-warning")
+            .removeClass("border")
+            .addClass("border-success");
+
+        if (distractor.is("[class^=paired-]")) { // moving paired blocks
+            let list = $("[id^=paired-]").filter( (_, elem) => {
+                return distractor.hasClass(elem.id);
+            });
+            list.children().not("h6").not(".hint-disabled").attr("draggable", true).removeClass("bg-gray").addClass("bg-white");
+            list.append(distractor);
+        }
+        else // moving normal blocks
+            $("#distractors-" + key).append(distractor);
+
+        distractor.css("margin-left", "0px");
+        distractor.addClass("hint-disabled");
+        distractor.attr("draggable", false).removeClass("bg-white").addClass("bg-gray");
+    });
+    if (parsonsStates[key] && parsonsStates[key][1].length < parsing.hints[1].length)
+        alert("One of the misleading options has been deactivated, resulting in a total of " + parsing.hints[1].length +  " disabled choices");
+    parsonsStates[key] = parsing.hints;
+    setTimeout(() => {
+        dragAndDropDict[key].updateValues();
+        dragAndDropDict[key].updateResult();
+    }, 250);
 }
 
 /**
@@ -75,12 +117,15 @@ function load_feedback_parsons(key, content) {
  * returns a dictionary {indicationValue, indexTable, feedbackContent}
  */
 function parsons_parse_feedback_content(content){
+    // "<p>2</p>\n<p>[5, 4, 4]</p>\n<p>Failed.</p>\n<p>Grade: 0.00%</p>\n<p>[1, [], []]</p>\n"
     let result = {};
-    result.indication = parseInt(content[3]);
-    result.table = content.substring(13, content.indexOf("]")).split(", ").map((elem) => {
-        return parseInt(elem);
-    });
-    result.feedback = content.substring(content.indexOf("]")+6);
+    let contentSplit = content.split('\n');
+    result.indication = parseInt(contentSplit[0][3]);
+    result.table = contentSplit[1].substring(4, contentSplit[1].length-5).split(',').map((elem) => {return parseInt(elem)});
+    result.hints = JSON.parse(contentSplit[contentSplit.length-2].substring(3, contentSplit[contentSplit.length-2].length-4));
+    contentSplit.splice(0, 2); // delete the two first elements
+    contentSplit.splice(contentSplit.length-2, 2); // delete the two last elements
+    result.feedback = contentSplit.join('\n');
     return result;
 }
 
@@ -195,6 +240,12 @@ function parsons_generate_from_file(pid) {
                     $("#grading-" + pid).click();
                 if ("length_feedback" in data)
                     $("#length-feedback-" + pid).click();
+                if ("adaptive" in data){
+                    $("#adaptive-" + pid).click();
+                    $("#adaptive-start-" + pid).val(data.adaptive_start);
+                    $("#adaptive-interval-" + pid).val(data.adaptive_interval);
+                    $("#adaptive-stop-" + pid).val(data.adaptive_stop);
+                }
                 if ("indentation" in data)
                     $("#indentation-" + pid).click();
                 if ("choices" in data){
@@ -255,6 +306,13 @@ function parsons_export_file(pid) {
     if (fail_msg.val() !== "")
         data.fail_msg = fail_msg.val();
     data.indication = $("#indication-" + pid).val();
+
+    if ($("#adaptive-" + pid).is(":checked")){
+        data.adaptive = true;
+        data.adaptive_start = $("#adaptive-start-" + pid).val();
+        data.adaptive_interval = $("#adaptive-interval-" + pid).val();
+        data.adaptive_stop = $("#adaptive-stop-" + pid).val();
+    }
     if ($("#indentation-" + pid).is(":checked"))
         data.indentation = true;
     if ($("#grading-" + pid).is(":checked"))

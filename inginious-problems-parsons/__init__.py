@@ -36,6 +36,8 @@ class ParsonsProblem(Problem):
         self._ranged_grading = True if "grading" in content else False
         self._length_feedback = True if "length_feedback" in content else False
         self._size = len(content["choices"]) if "choices" in content else None
+        self._adaptive_params = content["adaptive-params"] if "adaptive" in content else None
+        self._distractors = content["distractors"] if "distractors" in content else None
 
         self._choices = []
         if "choices" not in content or not isinstance(content['choices'], (list, tuple)):
@@ -122,6 +124,12 @@ class ParsonsProblem(Problem):
         else:
             answer = json.loads(task_input[self.get_id()])
 
+        # Adaptive: if there is no state, create one
+        if not "state" in answer:
+            answer["state"] = [0, [], []]
+        if self._distractors is None:  # TODO: remove when block fusion is done
+            self._adaptive_params = None
+
         # generate the sequence of the answer following the blocks placement
         answer["sequence"] = [-1 for _ in range(self._size)]
         for i in range(self._size):
@@ -167,26 +175,72 @@ class ParsonsProblem(Problem):
             elif not block_failed and ("success_msg" in self._choices[answer["sequence"][i]]):
                 block_msg += ("\n  - (+) " + self._choices[answer["sequence"][i]]["success_msg"])
 
-        #  retrieve the success message for unused distractors, which is the correct solution.
+        # Retrieve the success message for unused distractors, which is the correct solution.
         for i in range(len(self._inputs_lines)):
             if self._inputs_lines[i] == -1 and answer["lines"][i] == -1 and "success_msg" in self._choices[i]:
                 block_msg += ("\n  - (+) " + self._choices[i]["success_msg"])
 
+        # Solution is correct
         if invalid_count == 0 and solution_size == len(self._inputs_sequence):
-            msg = [self._indication, str(items_feedback), (self._success_msg + block_msg)]
+            answer["state"][0] = -1  # Adaptive: solution found, not more help needed
+            msg = [self._indication, str(items_feedback), (self._success_msg + block_msg), json.dumps(answer["state"])]
             return True, None, msg, 0, ""
+
+        # Solution is incorrect
         grade = ((len(self._inputs_sequence) - invalid_count) / (len(self._inputs_sequence)) * 100)
+        answer["state"][0] = answer["state"][0]+1 if answer["state"][0] != -1 else -1
+        next_hint = self.__next_hint_interval(answer["state"][0])
+        # Adaptive: new hint
+        if self._adaptive_params is not None and (answer["state"][0] == self._adaptive_params[0] or (answer["state"][0] > self._adaptive_params[0] and (answer["state"][0] - self._adaptive_params[0]) % self._adaptive_params[1] == 0)):
+            if not self.__disable_next_distractor(answer["state"]):  # Adaptive: disable one distractor if possible
+                # TODO: setup block fusion
+                answer["state"][0] = -1
+        if self._adaptive_params is not None and answer["state"][0] != -1:
+            block_msg += f"\n\nYou tried {answer['state'][0]} times. The next hint will be available in {next_hint} attempt(s)."
+        elif self._adaptive_params is not None:
+            block_msg += "\n\nAdditional hints are no longer available."
+
         msg = [self._indication, str(items_feedback), (self._fail_msg + block_msg),
-               ("Grade: %.2f%%" % grade if self._ranged_grading else "")]
-        return False, None, msg, 0, ""
+               ("Grade: %.2f%%" % grade if self._ranged_grading else ""), json.dumps(answer["state"])]
+        return False, None, msg, 0, "STATE"
+
+    def __disable_next_distractor(self, state):
+        if self._distractors is None:
+            return False
+        for distractor in self._distractors:
+            if distractor not in state[1]:
+                state[1].append(distractor)
+                return len(state[1]) < len(self._distractors)
+        return False  # No more distractors
+
+    def __next_hint_interval(self, tries):
+        if self._adaptive_params is None:
+            return -1
+        if tries < self._adaptive_params[0]:
+            return self._adaptive_params[0] - tries
+        else:
+            return self._adaptive_params[1] - ((tries - self._adaptive_params[0]) % self._adaptive_params[1])
 
     @classmethod
     def parse_problem(self, problem_content):
         parsed_content = Problem.parse_problem(problem_content)
+        parsed_content["distractors"] = []
         if "indentation" in parsed_content:
             parsed_content["indentation"] = True
         if "length_feedback" in parsed_content:
             parsed_content["length_feedback"] = True
+        if "adaptive" in parsed_content:
+            parsed_content["adaptive"] = True
+            if parsed_content["adaptive-start"] == "":
+                parsed_content["adaptive-start"] = 1
+            if parsed_content["adaptive-interval"] == "":
+                parsed_content["adaptive-interval"] = 1
+            if parsed_content["adaptive-stop"] == "":
+                parsed_content["adaptive-stop"] = 1
+            parsed_content["adaptive-params"] = (int(parsed_content["adaptive-start"]), int(parsed_content["adaptive-interval"]), int(parsed_content["adaptive-stop"]))
+            del parsed_content["adaptive-start"]
+            del parsed_content["adaptive-interval"]
+            del parsed_content["adaptive-stop"]
 
         if "choices" in parsed_content:
             parsed_content["choices"] = [val for _, val in
@@ -198,8 +252,12 @@ class ParsonsProblem(Problem):
                     del choice["fail_msg"]
                 if choice["distractor"] == "":
                     del choice["distractor"]
+                if "distractor" in choice:
+                    parsed_content["distractors"].append(int(choice["id"]))
                 if "pair" in choice:
                     choice["pair"] = True
+        if len(parsed_content["distractors"]) == 0:
+            del parsed_content["distractors"]
         return parsed_content
 
     @classmethod
