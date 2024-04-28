@@ -127,8 +127,6 @@ class ParsonsProblem(Problem):
         # Adaptive: if there is no state, create one
         if not "state" in answer:
             answer["state"] = [0, [], []]
-        if self._distractors is None:  # TODO: remove when block fusion is done
-            self._adaptive_params = None
 
         # generate the sequence of the answer following the blocks placement
         answer["sequence"] = [-1 for _ in range(self._size)]
@@ -193,8 +191,8 @@ class ParsonsProblem(Problem):
         # Adaptive: new hint
         if self._adaptive_params is not None and (answer["state"][0] == self._adaptive_params[0] or (answer["state"][0] > self._adaptive_params[0] and (answer["state"][0] - self._adaptive_params[0]) % self._adaptive_params[1] == 0)):
             if not self.__disable_next_distractor(answer["state"]):  # Adaptive: disable one distractor if possible
-                # TODO: setup block fusion
-                answer["state"][0] = -1
+                if not self.__next_block_fusion(answer["state"]):
+                    answer["state"][0] = -1
         if self._adaptive_params is not None and answer["state"][0] != -1:
             block_msg += f"\n\nYou tried {answer['state'][0]} times. The next hint will be available in {next_hint} attempt(s)."
         elif self._adaptive_params is not None:
@@ -210,8 +208,71 @@ class ParsonsProblem(Problem):
         for distractor in self._distractors:
             if distractor not in state[1]:
                 state[1].append(distractor)
-                return len(state[1]) < len(self._distractors)
+                return True  # len(state[1]) < len(self._distractors)
         return False  # No more distractors
+
+    def __next_block_fusion(self, state):
+        # find not fused blocks
+        not_fuzed = self.__find_not_fused(state)
+        if len(not_fuzed) > 0:
+            return self.__fuse_with_best_neighbor([not_fuzed[0]], not_fuzed[1:], state)
+        min_len = float("inf")
+        min_fusion = None
+        for fusion in state[2]:
+            if len(fusion) < min_len:
+                min_len = len(fusion)
+                min_fusion = fusion
+        return self.__fuse_with_best_neighbor(min_fusion, not_fuzed, state)
+
+    def __find_not_fused(self, state):
+        choices = []
+        for choice_id in self._inputs_sequence:
+            not_fused = True
+            for fusion in state[2]:
+                if choice_id in fusion:
+                    not_fused = False
+            if not_fused:
+                choices.append(choice_id)
+        return choices
+
+    def __fuse_with_best_neighbor(self, elem_to_fuse, not_fused, state):
+        prev_index = self._inputs_sequence.index(elem_to_fuse[0])
+        next_index = self._inputs_sequence.index(elem_to_fuse[-1])
+        prev_choice = self._inputs_sequence[prev_index - 1] if prev_index > 0 else None
+        next_choice = self._inputs_sequence[next_index + 1] if next_index < len(self._inputs_sequence) - 1 else None
+        if prev_choice in not_fused:
+            state[2].append([prev_choice] + elem_to_fuse)
+            return (len(not_fused) + len(state[2])) > self._adaptive_params[2]
+        if next_choice in not_fused:
+            state[2].append(elem_to_fuse + [next_choice])
+            return (len(not_fused) + len(state[2])) > self._adaptive_params[2]
+        prev_fusion_index = self.__find_fusion_index(prev_choice, state)
+        next_fusion_index = self.__find_fusion_index(next_choice, state)
+        if prev_fusion_index is not None and next_fusion_index is not None:
+            if len(prev_fusion_index) <= len(next_fusion_index):
+                state[2][prev_fusion_index] += elem_to_fuse
+                del state[2][state[2].index(elem_to_fuse)]
+                return (len(not_fused) + len(state[2])) > self._adaptive_params[2]
+            state[2][next_fusion_index] = elem_to_fuse + state[2][next_fusion_index]
+            del state[2][state[2].index(elem_to_fuse)]
+            return (len(not_fused) + len(state[2])) > self._adaptive_params[2]
+        if prev_fusion_index is not None:
+            state[2][prev_fusion_index] += elem_to_fuse
+            del state[2][state[2].index(elem_to_fuse)]
+            return (len(not_fused) + len(state[2])) > self._adaptive_params[2]
+        if next_fusion_index is not None:
+            state[2][next_fusion_index] = elem_to_fuse + state[2][next_fusion_index]
+            del state[2][state[2].index(elem_to_fuse)]
+            return (len(not_fused) + len(state[2])) > self._adaptive_params[2]
+        return False
+
+    def __find_fusion_index(self, choice_id, state):
+        if choice_id is None:
+            return None
+        for index, fusion in enumerate(state[2]):
+            if choice_id in fusion:
+                return index
+
 
     def __next_hint_interval(self, tries):
         if self._adaptive_params is None:

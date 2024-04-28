@@ -11,6 +11,7 @@ function ParsonsDragAndDrop(itemID, options) {
     this.itemsValues = new Array(this.items.length);
     this.itemsIndent = new Array(this.items.length).fill(0);
     this.enableIndentation = options.indent;
+    this.editPage = options.edit;
 
     this.items.forEach((item) => {
         item.addEventListener("dragstart", (elem) => {
@@ -198,7 +199,7 @@ ParsonsDragAndDrop.prototype.loadInput = function (input) {
             sortedItems.splice(this.itemsValues[i], 1, this.items[i]);
         }
 
-        if (!options.edit) {
+        if (!this.editPage) {
             // reset the dragability in case it was disabled by adaptive hints
             $(this.items[i]).attr("draggable", true).addClass("bg-white").removeClass("bg-gray");
             //reset border feedback if any
