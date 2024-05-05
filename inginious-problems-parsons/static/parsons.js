@@ -42,12 +42,16 @@ function load_input_parsons(submissionid, key, input) {
 }
 
 function load_feedback_parsons(key, content) {
-    // reset feedback if any
+        // reset feedback if any
     $("[id^=choice-" + key +  "]").removeClass("border-danger")
         .removeClass("border-success")
         .removeClass("border-warning")
         .removeClass("hint-disabled")
         .addClass("border border-primary");
+    let fusedBlocks = $("[id^=choice-fused-" + key + "]");
+    $("#distractors-" + key).append(fusedBlocks.children());
+    fusedBlocks.detach();
+    dragAndDropDict[key].loadInput($(".parsons-result-input-" + key).val());
     let parsing = parsons_parse_feedback_content(content[1]);
     load_feedback_code(key, [content[0], parsing.feedback]);
     let itemsInResult = $("#result-" + key).children();
@@ -74,7 +78,7 @@ function load_feedback_parsons(key, content) {
 
     // Adaptive modifications
     // TODO: move to hint button when added
-    parsing.hints[1].forEach((id) => {
+    parsing.hints[1].forEach((id) => { // Disable the distractors
         let distractor = $("#choice-" + key + "-" + id);
         // reset previous feedback if any
         distractor.removeClass("border-danger")
@@ -99,6 +103,23 @@ function load_feedback_parsons(key, content) {
     });
     if (parsonsStates[key] && parsonsStates[key][1].length < parsing.hints[1].length)
         alert("One of the misleading options has been deactivated, resulting in a total of " + parsing.hints[1].length +  " disabled choices");
+
+    parsing.hints[2].forEach((fusion, index) => {
+        let firstChoice = $("#choice-" + key + "-" + fusion[0]);
+        firstChoice.before('<div id="choice-fused-' + key + '-' + index + '" style="border:2px solid" class="mt-1 mb-1 bg-white border-primary" draggable="true"</div>');
+        let firstChoiceIndex = dragAndDropDict[key].getIndex(firstChoice[0]);
+        let fusionIndent = dragAndDropDict[key].itemsIndent[firstChoiceIndex] - parsing.hints[3][firstChoiceIndex];
+        fusion.forEach((id) => {
+            let choice = $("#choice-" + key + "-" + id);
+            $("#choice-fused-" + key + "-" + index).append(choice);
+            choice.attr("draggable", false);
+            choice.removeClass("border").removeClass("mt-1 mb-1").addClass("border-0");
+            choice.css("margin-left", parsing.hints[3][id] * 50 + "px");
+        });
+        $("#choice-fused-" + key + "-" + index).css("margin-left", fusionIndent * 50 + "px");
+        dragAndDropDict[key].addDraggable(index, true);
+    });
+
     parsonsStates[key] = parsing.hints;
     setTimeout(() => {
         dragAndDropDict[key].updateValues();
@@ -162,7 +183,7 @@ function parsons_create_choice(pid, choice_data){
     }
     else {
         new_row.attr('draggable', 'True');
-        $("#choices-" + pid).append(new_row);
+        $("#result-" + pid).append(new_row);
         $("#choice-info-" + pid + "-" + index).html("#" + ("00" + index).slice(-2));
     }
 
@@ -182,7 +203,7 @@ function parsons_create_choice(pid, choice_data){
     // enable drag and drop for the new item if it is added manually and not a distractor
     // when added manually, it has no given id
     if ("newChoice" in choice_data)
-        dragAndDropDict[pid].addDraggable(index);
+        dragAndDropDict[pid].addDraggable(index, false);
     if ("newDistractor" in choice_data)
         dragAndDropDict[pid].addDistractor(index);
 }

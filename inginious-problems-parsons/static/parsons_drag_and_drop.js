@@ -53,7 +53,7 @@ function ParsonsDragAndDrop(itemID, options) {
         this.distractorList.addEventListener("dragover", (elem) => {
             elem.preventDefault();
             let draggingItem = document.querySelector(".dragging-" + itemID);
-            let otherItems = [...this.distractorList.querySelectorAll("[id^=choice-" + itemID + "]:not(.dragging-" + itemID + "):not([class^=paired-" + itemID + "])")];
+            let otherItems = [...$("#distractors-" + itemID).children().not(".dragging-" + itemID)];
             let nextItem = otherItems.find(item => {
                 let rect = item.getBoundingClientRect();
                 return elem.clientY <= rect.top + item.offsetHeight / 2;
@@ -68,7 +68,7 @@ function ParsonsDragAndDrop(itemID, options) {
     this.resultList.addEventListener("dragover", (elem) => {
         elem.preventDefault();
         let draggingItem = document.querySelector(".dragging-" + itemID);
-        let otherItems = [...this.resultList.querySelectorAll("[id^=choice-" + itemID + "]:not(.dragging-" + itemID + ")")];
+        let otherItems = [...$("#result-" + itemID).children().not(".dragging-" + itemID)];
         let nextItem = otherItems.find(item => {
             let rect = item.getBoundingClientRect();
             return elem.clientY <= rect.top + item.offsetHeight / 2;
@@ -104,14 +104,19 @@ function ParsonsDragAndDrop(itemID, options) {
     });
 }
 
-ParsonsDragAndDrop.prototype.addDraggable = function (index) {
-    let item = document.querySelector("#choice-" + this.itemID + '-' + index);
-
-    this.items.splice(index, 0, item); // insert item at index
-    this.itemsValues.splice(index, 0, -1); // insert value -1 at the item index
-    this.itemsIndent.splice(index, 0, 0);  // insert indent 0 at the item index
-    this.updateValues();
-    this.updateResult();
+ParsonsDragAndDrop.prototype.addDraggable = function (index, fusedBlock) {
+    let item;
+    if (fusedBlock){
+        item = document.querySelector("#choice-fused-" + this.itemID + '-' + index);
+    }
+    else {
+        item = document.querySelector("#choice-" + this.itemID + '-' + index);
+        this.items.splice(index, 0, item); // insert item at index
+        this.itemsValues.splice(index, 0, -1); // insert value -1 at the item index
+        this.itemsIndent.splice(index, 0, 0);  // insert indent 0 at the item index
+        this.updateValues();
+        this.updateResult();
+    }
 
     item.addEventListener("dragstart", (elem) => {
         item.classList.add("dragging-" + this.itemID);
@@ -147,9 +152,20 @@ ParsonsDragAndDrop.prototype.addDistractor = function (index) {
 };
 
 ParsonsDragAndDrop.prototype.updateIndent = function (offset) {
-    this.itemsIndent[this.draggingItemIndex] = Math.min(Math.max(0, Math.round(offset / 50)), 10);
-    let item = $("#" + this.items[this.draggingItemIndex].id);
-    item.css("margin-left", this.itemsIndent[this.draggingItemIndex] * 50 + "px");
+    if (this.draggingItemIndex === -1){
+        let indent = Math.min(Math.max(0, Math.round(offset / 50)), 10);
+        let item = $(".dragging-" + this.itemID);
+        let state = JSON.parse($(".parsons-result-input-" + this.itemID).val())["state"];
+        item.children().each((_, item) => {
+            this.itemsIndent[this.getIndex(item)] = indent + state[3][this.getIndex(item)];
+        });
+        item.css("margin-left", indent * 50 + "px");
+    }
+    else {
+        this.itemsIndent[this.draggingItemIndex] = Math.min(Math.max(0, Math.round(offset / 50)), 10);
+        let item = $("#" + this.items[this.draggingItemIndex].id);
+        item.css("margin-left", this.itemsIndent[this.draggingItemIndex] * 50 + "px");
+    }
 };
 
 ParsonsDragAndDrop.prototype.updateValues = function () {
@@ -231,6 +247,6 @@ ParsonsDragAndDrop.prototype.loadInput = function (input) {
             $(pairs).attr("draggable", false).removeClass("bg-white").addClass("bg-gray");
         }
         let index = this.getIndex(item);
-        $("#" + item.id).css("margin-left", this.itemsIndent[index] * 60 + "px");
+        $("#" + item.id).css("margin-left", this.itemsIndent[index] * 50 + "px");
     });
 };

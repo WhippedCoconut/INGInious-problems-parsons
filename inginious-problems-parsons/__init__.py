@@ -126,7 +126,7 @@ class ParsonsProblem(Problem):
 
         # Adaptive: if there is no state, create one
         if not "state" in answer:
-            answer["state"] = [0, [], []]
+            answer["state"] = [0, [], [], [0 for _ in range(len(answer["indent"]))]]
 
         # generate the sequence of the answer following the blocks placement
         answer["sequence"] = [-1 for _ in range(self._size)]
@@ -225,8 +225,10 @@ class ParsonsProblem(Problem):
         return self.__fuse_with_best_neighbor(min_fusion, not_fuzed, state)
 
     def __find_not_fused(self, state):
+        shuffled = self._inputs_sequence.copy()
+        random.shuffle(shuffled)
         choices = []
-        for choice_id in self._inputs_sequence:
+        for choice_id in shuffled:
             not_fused = True
             for fusion in state[2]:
                 if choice_id in fusion:
@@ -242,29 +244,28 @@ class ParsonsProblem(Problem):
         next_choice = self._inputs_sequence[next_index + 1] if next_index < len(self._inputs_sequence) - 1 else None
         if prev_choice in not_fused:
             state[2].append([prev_choice] + elem_to_fuse)
-            return (len(not_fused) + len(state[2])) > self._adaptive_params[2]
+            self.__update_relative_indent(state)
+            return (len(not_fused) + len(state[2])) - 1 > self._adaptive_params[2]
         if next_choice in not_fused:
             state[2].append(elem_to_fuse + [next_choice])
-            return (len(not_fused) + len(state[2])) > self._adaptive_params[2]
+            self.__update_relative_indent(state)
+            return (len(not_fused) + len(state[2])) - 1 > self._adaptive_params[2]
         prev_fusion_index = self.__find_fusion_index(prev_choice, state)
         next_fusion_index = self.__find_fusion_index(next_choice, state)
         if prev_fusion_index is not None and next_fusion_index is not None:
-            if len(prev_fusion_index) <= len(next_fusion_index):
+            if len(state[2][prev_fusion_index]) <= len(state[2][next_fusion_index]):
                 state[2][prev_fusion_index] += elem_to_fuse
-                del state[2][state[2].index(elem_to_fuse)]
-                return (len(not_fused) + len(state[2])) > self._adaptive_params[2]
-            state[2][next_fusion_index] = elem_to_fuse + state[2][next_fusion_index]
-            del state[2][state[2].index(elem_to_fuse)]
-            return (len(not_fused) + len(state[2])) > self._adaptive_params[2]
-        if prev_fusion_index is not None:
+            else:
+                state[2][next_fusion_index] = elem_to_fuse + state[2][next_fusion_index]
+        elif prev_fusion_index is not None:
             state[2][prev_fusion_index] += elem_to_fuse
-            del state[2][state[2].index(elem_to_fuse)]
-            return (len(not_fused) + len(state[2])) > self._adaptive_params[2]
-        if next_fusion_index is not None:
+        elif next_fusion_index is not None:
             state[2][next_fusion_index] = elem_to_fuse + state[2][next_fusion_index]
+
+        if elem_to_fuse in state[2]:
             del state[2][state[2].index(elem_to_fuse)]
-            return (len(not_fused) + len(state[2])) > self._adaptive_params[2]
-        return False
+        self.__update_relative_indent(state)
+        return (len(not_fused) + len(state[2])) > self._adaptive_params[2]
 
     def __find_fusion_index(self, choice_id, state):
         if choice_id is None:
@@ -273,6 +274,13 @@ class ParsonsProblem(Problem):
             if choice_id in fusion:
                 return index
 
+    def __update_relative_indent(self, state):
+        for fusion in state[2]:
+            min_indent = 11
+            for choice_id in fusion:
+                min_indent = self._inputs_indent[choice_id] if self._inputs_indent[choice_id] < min_indent else min_indent
+            for choice_id in fusion:
+                state[3][choice_id] = self._inputs_indent[choice_id] - min_indent
 
     def __next_hint_interval(self, tries):
         if self._adaptive_params is None:
